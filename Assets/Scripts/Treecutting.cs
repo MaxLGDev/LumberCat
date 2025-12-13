@@ -5,17 +5,14 @@ public class Treecutting : MonoBehaviour
 {
     [SerializeField] private Vector3 rightPosition;
     [SerializeField] private Vector3 leftPosition;
-    [SerializeField] private TMP_Text tapCounter;
+
+    public System.Action<int> OnRoundTapChanged;
+    public System.Action<int> OnTotalTapChanged;
+    public int TotalTap;
+    public int RoundTaps = 0;
 
     public bool inputEnabled = true;
-    public float TotalTap;
     private KeyCode lastKey;
-
-    private void Start()
-    {
-        transform.localPosition = rightPosition;
-        tapCounter.text = $"Taps: 0";
-    }
 
     private void Update()
     {
@@ -23,55 +20,44 @@ public class Treecutting : MonoBehaviour
             return;
 
         if (Input.GetKeyDown(KeyCode.Q))
+            ProcessTap(KeyCode.Q);    
+        
+        if (Input.GetKeyDown(KeyCode.D))
+            ProcessTap(KeyCode.D);
+    }
+
+    private void ProcessTap(KeyCode key)
+    {
+        TotalTap++;
+        OnTotalTapChanged?.Invoke(TotalTap);
+
+        bool correct = key != lastKey;
+
+        if(correct)
         {
-            if (lastKey != KeyCode.Q)
-            {
-                lastKey = KeyCode.Q;
+            lastKey = key;
+            RoundTaps++;
+            if (key == KeyCode.Q)
                 GoLeft();
-            }
             else
-            {
-                TotalTap = Mathf.Max(0, TotalTap - 1);
-            }
-        }
-        else if (Input.GetKeyDown(KeyCode.D))
-        {
-            if (lastKey != KeyCode.D)
-            {
-                lastKey = KeyCode.D;
                 GoRight();
-            }
-            else
-            {
-                TotalTap = Mathf.Max(0, TotalTap - 1);
-            }
+        }
+        else
+        {
+            RoundTaps = Mathf.Max(0, RoundTaps - 1);
         }
 
+        OnRoundTapChanged?.Invoke(RoundTaps);
     }
 
-    public void GoLeft()
+    public void ResetRound()
     {
-        transform.localPosition = leftPosition;
-        RegisterTap();
+        RoundTaps = 0;
+        lastKey = KeyCode.None;
+        OnRoundTapChanged?.Invoke(RoundTaps);
     }
 
-    public void GoRight()
-    {
-        transform.localPosition = rightPosition;
-        RegisterTap();
+    public void GoLeft() => transform.localPosition = leftPosition;
 
-    }
-
-    private void RegisterTap(int amount = 1)
-    {
-        TotalTap = Mathf.Max(0, TotalTap + amount);
-        tapCounter.text = $"Taps: {TotalTap}";
-    }
-
-    [ContextMenu("Reset tap amount")]
-    public void ResetTap()
-    {
-        TotalTap = 0;
-        tapCounter.text = $"Taps: 0";
-    }
+    public void GoRight() => transform.localPosition = rightPosition;
 }

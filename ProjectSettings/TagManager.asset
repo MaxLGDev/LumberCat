@@ -41,6 +41,12 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Tree
+    uniqueID: 3513395795
+    locked: 0
+  - name: Map
+    uniqueID: 3358809495
+    locked: 0
   - name: UI
     uniqueID: 2222563125
     locked: 0
@@ -49,6 +55,9 @@ TagManager:
     locked: 0
   - name: Character
     uniqueID: 2829920079
+    locked: 0
+  - name: Cover
+    uniqueID: 3663380651
     locked: 0
   m_RenderingLayers:
   - Default
