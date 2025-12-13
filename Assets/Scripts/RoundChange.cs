@@ -75,7 +75,7 @@ public class RoundChange : MonoBehaviour
 
     private IEnumerator RoundCountdown()
     {
-        requiredTapThisRound = baseRequiredTap * Mathf.Pow(1.5f, RoundNumber - 1);
+        requiredTapThisRound = 100; //baseRequiredTap * Mathf.Pow(1.5f, RoundNumber - 1);
         SetProgress();
 
         roundActive = false;
@@ -89,7 +89,7 @@ public class RoundChange : MonoBehaviour
         }
 
         countdownText.text = $"START!";
-        currentTimer = roundDuration - (RoundNumber - 1) * 1f;
+        currentTimer = 5; //roundDuration - (RoundNumber - 1) * 1f;
 
         yield return new WaitForSeconds(0.5f);
         roundActive = true;
