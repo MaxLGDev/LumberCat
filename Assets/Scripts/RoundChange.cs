@@ -20,8 +20,6 @@ public class RoundDefinition
 
     [TextArea]
     public string description;
-
-    
 }
 
 public class RoundChange : MonoBehaviour
@@ -35,6 +33,8 @@ public class RoundChange : MonoBehaviour
     [Header("Countdown Details")]
     [SerializeField] private TMP_Text countdownText;
     [SerializeField] private GameObject countdownCover;
+    [SerializeField] private TMP_Text timeLimitInfoText;
+    [SerializeField] private TMP_Text requiredButtonsText;
     [SerializeField] private int cdTimer = 3;
 
     [Header("Round Details")]
@@ -127,6 +127,9 @@ public class RoundChange : MonoBehaviour
         roundActive = false;
         treecutting.inputEnabled = false;
         countdownCover.SetActive(true);
+
+        timeLimitInfoText.text = $"Time: {currentRound.duration}s";
+        requiredButtonsText.text = $"Buttons: " + string.Join(" / ", currentRound.allowedKeys);
 
         for (int i = cdTimer; i > 0; i--)
         {
