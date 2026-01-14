@@ -1,70 +1,94 @@
 using System.Collections;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
+
+
+[System.Serializable]
+public class RoundDefinition
+{
+    public RoundMechanic mechanic;
+    [Tooltip("Time limit in seconds")]
+    public float duration;
+
+    [Tooltip("Taps required to clear the round")]
+    public int requiredTaps;
+
+    [Header("UI")]
+    public string instructionText;
+    public KeyCode[] allowedKeys;
+
+    [TextArea]
+    public string description;
+
+    
+}
 
 public class RoundChange : MonoBehaviour
 {
     [SerializeField] private Treecutting treecutting;
     [SerializeField] private TMP_Text roundCount;
 
+    [SerializeField] private GameObject player;
+    [SerializeField] private GameObject gameOverPanel;
+
     [Header("Countdown Details")]
     [SerializeField] private TMP_Text countdownText;
     [SerializeField] private GameObject countdownCover;
-    private int cdTimer = 3;
+    [SerializeField] private int cdTimer = 3;
 
     [Header("Round Details")]
     [SerializeField] private TMP_Text roundTimer;
     [SerializeField] private TMP_Text tapCounter;
+    [SerializeField] private RoundDefinition[] rounds;
+
     public int RoundNumber { get; private set; }
     //private int maxRound = 10;
-    private float roundDuration = 15;
     private float currentTimer;
-    private float baseRequiredTap = 20;
-    private float requiredTapThisRound;
+    private int requiredTapThisRound;
     private bool roundActive;
-    private float currentProgress;
+
+    private Coroutine countdownRoutine;
 
     [Header("Progress Bar")]
     [SerializeField] private Slider progressBar;
 
     private void Start()
     {
-        roundCount.text = $"ラウンド: 1/10";
         RoundNumber = 1;
 
         treecutting.OnTotalTapChanged += HandleTotalTap;
         treecutting.OnRoundTapChanged += HandleRoundTap;
 
-        StartCoroutine(RoundCountdown());
+        roundCount.text = $"ラウンド: {RoundNumber}/{rounds.Length}";
+
+        player.SetActive(false);
+        gameOverPanel.SetActive(false);
+
+        countdownRoutine = StartCoroutine(RoundCountdown());
     }
 
     private void Update()
     {
-        GetTimerDuration();
+        TickRound();
     }
 
-    private void GetTimerDuration()
+    private void TickRound()
     {
-        if (roundActive)
+        if (!roundActive)
+            return;
+
+        currentTimer = Mathf.Max(0, currentTimer - Time.deltaTime);
+        roundTimer.text = $"タイマー: {currentTimer:F3}";
+
+        if (treecutting.RoundTaps >= requiredTapThisRound)
         {
-            currentTimer = Mathf.Max(0, currentTimer - Time.deltaTime);
-            roundTimer.text = $"タイマー: {currentTimer:F3}";
+            ChangeToNextRound();
+        }
 
-            if (treecutting.RoundTaps >= requiredTapThisRound)
-            {
-                roundActive = false;
-                treecutting.inputEnabled = false;
-                Debug.Log("Round complete!");
-            }
-
-            if (currentTimer <= 0)
-            {
-                roundActive = false;
-                treecutting.inputEnabled = false;
-                Debug.Log("You failed!");
-            }
+        if (currentTimer <= 0)
+        {
+            RoundLost();
         }
     }
 
@@ -82,23 +106,27 @@ public class RoundChange : MonoBehaviour
     {
         treecutting.ResetRound();
 
-        treecutting.RoundTaps = 0;
-
         progressBar.minValue = 0;
         progressBar.maxValue = requiredTapThisRound;
         progressBar.value = 0f;
 
-        tapCounter.text = $"タップ: {treecutting.TotalTap}";
+        tapCounter.text = $"タップ: {treecutting.TotalTaps}";
     }
 
     private IEnumerator RoundCountdown()
     {
-        requiredTapThisRound = baseRequiredTap * Mathf.Pow(1.5f, RoundNumber - 1);
+        RoundDefinition currentRound = rounds[RoundNumber - 1];
+
+        requiredTapThisRound = currentRound.requiredTaps;
+        currentTimer = currentRound.duration;
+
+        treecutting.SetMechanic(currentRound.mechanic, requiredTapThisRound);
+
         SetProgress();
 
         roundActive = false;
         treecutting.inputEnabled = false;
-        countdownCover.gameObject.SetActive(true);
+        countdownCover.SetActive(true);
 
         for (int i = cdTimer; i > 0; i--)
         {
@@ -107,14 +135,46 @@ public class RoundChange : MonoBehaviour
         }
 
         countdownText.text = $"スタート!";
-        currentTimer = roundDuration - (RoundNumber - 1) * 1f;
 
         yield return new WaitForSeconds(0.5f);
         roundActive = true;
-        countdownCover.gameObject.SetActive(false);
+        countdownCover.SetActive(false);
+        player.SetActive(true);
 
         treecutting.inputEnabled = true;
         // start round
+    }
+
+    private void ChangeToNextRound()
+    {
+        roundActive = false;
+        treecutting.inputEnabled = false;
+        player.SetActive(false);
+        
+        if(countdownRoutine != null)
+        {
+            StopCoroutine(countdownRoutine);
+            countdownRoutine = null;
+        }
+
+        RoundNumber++;
+
+        if (RoundNumber > rounds.Length)
+        {
+            Debug.Log("Game Complete!");
+            return;
+        }
+
+        roundCount.text = $"ラウンド: {RoundNumber}/{rounds.Length}";
+        countdownRoutine = StartCoroutine(RoundCountdown());
+    }
+
+    private void RoundLost()
+    {
+        treecutting.inputEnabled = false;
+        gameOverPanel.SetActive(true);
+        player.SetActive(false);
+        Debug.Log("You lost!");
     }
 
 
