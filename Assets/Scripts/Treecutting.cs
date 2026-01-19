@@ -9,13 +9,16 @@ public enum RoundMechanic
 
 public class Treecutting : MonoBehaviour
 {
-    [SerializeField] private Vector3 rightPosition;
-    [SerializeField] private Vector3 leftPosition;
+    [SerializeField] private Transform hammerSprite;
+    [SerializeField] private Transform idlePose;
+    [SerializeField] private Transform swingPose;
 
-    public System.Action<int> OnRoundTapChanged;
-    public System.Action<int> OnTotalTapChanged;
-    public int TotalTaps;
+    public System.Action<int> OnValidTap;
+    public System.Action<int> OnInvalidTap;
+
     public int RoundTaps = 0;
+
+    private bool isSwinging;
 
     private int requiredTapsThisRound;
 
@@ -52,6 +55,16 @@ public class Treecutting : MonoBehaviour
         ResetRound();
     }
 
+    private void SetHammerState(bool swinging)
+    {
+        isSwinging = swinging;
+
+        hammerSprite.SetPositionAndRotation(
+            swinging ? swingPose.position : idlePose.position,
+            swinging ? swingPose.rotation : idlePose.rotation
+            );
+    }
+
     private void HandleAlternateButtons()
     {
         if (Input.GetKeyDown(KeyCode.Q))
@@ -63,38 +76,29 @@ public class Treecutting : MonoBehaviour
 
     private void ProcessTap(KeyCode key)
     {
-        TotalTaps++;
-        OnTotalTapChanged?.Invoke(TotalTaps);
-
-        bool correct = key != lastKey;
+        bool correct = key != lastKey;  
 
         if(correct)
         {
             lastKey = key;
             RoundTaps++;
             if (key == KeyCode.Q)
-                GoLeft();
+                SetHammerState(true);
             else
-                GoRight();
+                SetHammerState(false);
+
+            OnValidTap?.Invoke(1);
         }
         else
         {
             Penalize();
+            OnInvalidTap?.Invoke(1);
         }
-
-        OnRoundTapChanged?.Invoke(RoundTaps);
     }
 
-    private bool spaceTapped = false;
-
-    private void ToggleCatPosition()
+    private void ToggleHammerPosition()
     {
-        spaceTapped = !spaceTapped;
-
-        if (spaceTapped)
-            GoLeft();
-        else
-            GoRight();
+        SetHammerState(!isSwinging);
     }
 
 
@@ -103,11 +107,9 @@ public class Treecutting : MonoBehaviour
         if (!Input.GetKeyDown(KeyCode.Space))
             return;
 
-        ToggleCatPosition();
-        TotalTaps++;
-        RoundTaps++;
-        OnTotalTapChanged?.Invoke(TotalTaps);
-        OnRoundTapChanged?.Invoke(RoundTaps);
+        ToggleHammerPosition();
+
+        OnValidTap?.Invoke(1);
     }
 
     private int SplitPoint => requiredTapsThisRound / 2;
@@ -131,38 +133,26 @@ public class Treecutting : MonoBehaviour
 
         if (correct)
         {
-            ToggleCatPosition();
+            ToggleHammerPosition();
             RegisterSingleTap();
         }
         else
             Penalize();
-
-
     }
 
     private void RegisterSingleTap()
     {
-        TotalTaps++;
-        RoundTaps++;
-
-        OnTotalTapChanged?.Invoke(TotalTaps);
-        OnRoundTapChanged?.Invoke(RoundTaps);
+        OnValidTap?.Invoke(1);
     }
 
     private void Penalize()
     {
         RoundTaps = Mathf.Max(0, RoundTaps - 1);
-        OnRoundTapChanged?.Invoke(RoundTaps);
     }
 
     public void ResetRound()
     {
         RoundTaps = 0;
         lastKey = KeyCode.None;
-        OnRoundTapChanged?.Invoke(RoundTaps);
     }
-
-    public void GoLeft() => transform.localPosition = leftPosition;
-
-    public void GoRight() => transform.localPosition = rightPosition;
 }

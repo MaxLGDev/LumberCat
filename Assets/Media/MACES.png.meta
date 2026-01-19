@@ -1,0 +1,285 @@
+fileFormatVersion: 2
+guid: 70dd899677d860e4e9b07d690b7d6d45
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 6093618364538964298
+    second: MACES_0
+  - first:
+      213: -188660153112730037
+    second: MACES_1
+  - first:
+      213: -7991375446875004694
+    second: MACES_2
+  - first:
+      213: -3037031034290278720
+    second: MACES_3
+  - first:
+      213: 9113757436946463572
+    second: MACES_4
+  - first:
+      213: 486868223783052907
+    second: MACES_5
+  - first:
+      213: 7732997011349259153
+    second: MACES_6
+  - first:
+      213: -298454271975293070
+    second: MACES_7
+  - first:
+      213: -636132927039744882
+    second: MACES_8
+  - first:
+      213: 6582866199581398121
+    second: MACES_9
+  - first:
+      213: 2013919137982693975
+    second: MACES_10
+  - first:
+      213: 1879172751194148165
+    second: MACES_11
+  - first:
+      213: -5298422904238190993
+    second: MACES_12
+  - first:
+      213: -6477027714025399578
+    second: MACES_13
+  - first:
+      213: 163917928393829320
+    second: MACES_14
+  - first:
+      213: -4266310475285496285
+    second: MACES_15
+  - first:
+      213: 6639393739026741613
+    second: MACES_16
+  - first:
+      213: -777477581151714546
+    second: MACES_17
+  - first:
+      213: -1120975985224400835
+    second: MACES_18
+  - first:
+      213: -6221063629430036241
+    second: MACES_19
+  - first:
+      213: -4723681613529467901
+    second: MACES_20
+  - first:
+      213: -4124580237934824494
+    second: MACES_21
+  - first:
+      213: 5552911984344964810
+    second: MACES_22
+  - first:
+      213: -6919229072497578285
+    second: MACES_23
+  - first:
+      213: 9129241465630912435
+    second: MACES_24
+  - first:
+      213: 1873931556614046574
+    second: MACES_25
+  - first:
+      213: 7370017515160226333
+    second: MACES_26
+  - first:
+      213: 841441699440806750
+    second: MACES_27
+  - first:
+      213: -6635715309373235912
+    second: MACES_28
+  - first:
+      213: 5516035251969640014
+    second: MACES_29
+  - first:
+      213: 2149474576881828822
+    second: MACES_30
+  - first:
+      213: 4602739552016371523
+    second: MACES_31
+  - first:
+      213: -8654419528692452196
+    second: MACES_32
+  - first:
+      213: -7062394625000156002
+    second: MACES_33
+  - first:
+      213: -5924645458008577841
+    second: MACES_34
+  - first:
+      213: 1682962873845264710
+    second: MACES_35
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: MACES_6
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 256
+        width: 31
+        height: 31
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 19341a68fcf115b60800000000000000
+      internalID: 7732997011349259153
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 93ca690ee1e49c444ab9681ae416e496
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":64.0,"y":64.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":0,"keepEmptyRects":false,"isAlternate":false}'
+    nameFileIdTable:
+      MACES_0: 6093618364538964298
+      MACES_1: -188660153112730037
+      MACES_10: 2013919137982693975
+      MACES_11: 1879172751194148165
+      MACES_12: -5298422904238190993
+      MACES_13: -6477027714025399578
+      MACES_14: 163917928393829320
+      MACES_15: -4266310475285496285
+      MACES_16: 6639393739026741613
+      MACES_17: -777477581151714546
+      MACES_18: -1120975985224400835
+      MACES_19: -6221063629430036241
+      MACES_2: -7991375446875004694
+      MACES_20: -4723681613529467901
+      MACES_21: -4124580237934824494
+      MACES_22: 5552911984344964810
+      MACES_23: -6919229072497578285
+      MACES_24: 9129241465630912435
+      MACES_25: 1873931556614046574
+      MACES_26: 7370017515160226333
+      MACES_27: 841441699440806750
+      MACES_28: -6635715309373235912
+      MACES_29: 5516035251969640014
+      MACES_3: -3037031034290278720
+      MACES_30: 2149474576881828822
+      MACES_31: 4602739552016371523
+      MACES_32: -8654419528692452196
+      MACES_33: -7062394625000156002
+      MACES_34: -5924645458008577841
+      MACES_35: 1682962873845264710
+      MACES_4: 9113757436946463572
+      MACES_5: 486868223783052907
+      MACES_6: 7732997011349259153
+      MACES_7: -298454271975293070
+      MACES_8: -636132927039744882
+      MACES_9: 6582866199581398121
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
