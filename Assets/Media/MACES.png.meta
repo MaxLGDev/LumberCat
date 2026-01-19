@@ -205,23 +205,45 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: MACES_6
+      name: MACES_1
       rect:
         serializedVersion: 2
-        x: 32
-        y: 256
-        width: 31
-        height: 31
+        x: 65
+        y: 289
+        width: 30
+        height: 30
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 19341a68fcf115b60800000000000000
-      internalID: 7732997011349259153
+      spriteID: 8ae440e6f63ec834e9b54a6479c37065
+      internalID: -188660153112730037
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MACES_2
+      rect:
+        serializedVersion: 2
+        x: 33
+        y: 289
+        width: 30
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 60304634ce4e61c40b70d8dbb4ee6138
+      internalID: -7991375446875004694
       vertices: []
       indices: 
       edges: []
