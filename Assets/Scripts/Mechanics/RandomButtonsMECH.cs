@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-public class SplitPhaseMECH : IRoundMechanic
+public class RandomButtonsMECH : IRoundMechanic
 {
     public event Action OnValidInput;
     public event Action OnInvalidInput;
@@ -11,8 +11,11 @@ public class SplitPhaseMECH : IRoundMechanic
     private int requiredTapsForRound;
     private bool isCompleted;
 
-    private KeyCode keyA;
-    private KeyCode keyB;
+    private KeyCode[] keyPool;
+    private KeyCode allowedKey;
+    private KeyCode lastKey;
+
+    public KeyCode CurrentKey => allowedKey;
 
     public void StartRound(int requiredTaps, KeyCode[] allowedKeys)
     {
@@ -21,10 +24,11 @@ public class SplitPhaseMECH : IRoundMechanic
         isCompleted = false;
 
         if (allowedKeys == null || allowedKeys.Length < 2)
-            throw new ArgumentException("AlternateButtons requires 2 keys");
+            throw new ArgumentException("The key pool requires more than 2 keys");
 
-        keyA = allowedKeys[0];
-        keyB = allowedKeys[1];
+        keyPool = allowedKeys;
+
+        GetRandomKey();
     }
 
     public void HandleKey(KeyCode key)
@@ -32,18 +36,7 @@ public class SplitPhaseMECH : IRoundMechanic
         if (isCompleted)
             return;
 
-        if (key != keyA && key != keyB)
-        {
-            OnInvalidInput?.Invoke();
-            return;
-        }
-
-        if (!InSecondPhase && key != keyA)
-        {
-            OnInvalidInput?.Invoke();
-            return;
-        }
-        else if(InSecondPhase && key != keyB)
+        if(key != allowedKey)
         {
             OnInvalidInput?.Invoke();
             return;
@@ -51,14 +44,24 @@ public class SplitPhaseMECH : IRoundMechanic
 
         currentTaps++;
         OnValidInput?.Invoke();
+        lastKey = allowedKey;
 
-        if (currentTaps >= requiredTapsForRound)
+        GetRandomKey();
+
+        while (allowedKey == lastKey)
+            GetRandomKey();
+
+        if(currentTaps >= requiredTapsForRound)
         {
             isCompleted = true;
             OnCompleted?.Invoke();
         }
     }
 
-    int SplitPoint => (requiredTapsForRound + 1) / 2;
-    bool InSecondPhase => currentTaps >= SplitPoint;
+    private void GetRandomKey()
+    {
+        int poolIndex = UnityEngine.Random.Range(0, keyPool.Length);
+
+        allowedKey = keyPool[poolIndex];
+    }
 }

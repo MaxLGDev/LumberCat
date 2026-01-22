@@ -49,7 +49,7 @@ public class AlternateButtonsMECH : IRoundMechanic
         currentTaps++;
         OnValidInput?.Invoke();
 
-        if (currentTaps >= requiredTapsForRound && isCompleted == false)
+        if (currentTaps >= requiredTapsForRound)
         {
             isCompleted = true;
             OnCompleted?.Invoke();

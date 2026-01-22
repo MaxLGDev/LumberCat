@@ -1,11 +1,12 @@
+using System;
 using UnityEngine;
-using UnityEngine.UI;
 
 public enum RoundMechanic
 {
     SingleButton,
     AlternateButtons,
-    SplitPhase
+    SplitPhase,
+    ButtonSequence
 }
 
 [System.Serializable]
@@ -17,70 +18,84 @@ public class RoundDefinition
 
     [Tooltip("Taps required to clear the round")]
     public int requiredTaps;
-
-    [Header("UI")]
-    public string instructionText;
     public KeyCode[] allowedKeys;
-
-    [TextArea]
-    public string description;
 }
 
 public class RoundManager : MonoBehaviour
 {
+    public event Action<RoundDefinition> OnRoundStarted;
+    public event Action OnRoundValidInput;
+    public event Action OnRoundInvalidInput;
+    public event Action<bool> OnRoundEnded;
+
     private IRoundMechanic currentMechanic;
     [SerializeField] private InputController inputController;
-
     [SerializeField] private RoundDefinition[] rounds;
-    [SerializeField] private Slider progressBar;
+    private RoundDefinition currentRound;
 
-    private int currentTaps;
-    private int requiredTaps;
-    private int totalTaps;
     private float timer;
     private bool isActive;
+
+    public bool IsRoundActive => isActive;
+    public float RemainingTime => timer;
+    public int TotalRounds => rounds.Length;
 
     private void Update()
     {
         if (!isActive)
             return;
 
-        if(timer > 0f)
-        {
-            timer -= Time.deltaTime;
-            if (timer <= 0f)
-                LoseRound();
-        }
+        timer -= Time.deltaTime;
+        if (timer <= 0f)
+            LoseRound();
     }
 
-    public void StartRound (RoundDefinition round)
+    public void PrepareRound(RoundDefinition round)
     {
-        CleanupMechanic();
+        currentRound = round;
 
         currentMechanic = CreateMechanic(round.mechanic);
         HookMechanic(currentMechanic);
         currentMechanic.StartRound(round.requiredTaps, round.allowedKeys);
 
         inputController.Bind(currentMechanic.HandleKey);
-        inputController.EnableInput(true);
+        inputController.EnableInput(false);
 
-        isActive = true;
-        timer = round.duration;
-        requiredTaps = round.requiredTaps;
-        currentTaps = 0;
-
-        progressBar.minValue = 0f;
-        progressBar.maxValue = requiredTaps;
-        progressBar.value = 0f;
+        OnRoundStarted?.Invoke(round);
     }
 
-    private void EndRound()
+    public void StartPreparedRound ()
     {
+        if (currentMechanic == null)
+            return;
+
+        timer = currentRound.duration;
+        inputController.EnableInput(true);
+        isActive = true;
+    }
+
+    public void EndRound(bool won)
+    {
+        isActive = false;
+
         inputController.EnableInput(false);
         inputController.Unbind();
 
-        UnhookMechanic(currentMechanic);
-        currentMechanic = null;
+        if(currentMechanic != null)
+        {
+            UnhookMechanic(currentMechanic);
+            currentMechanic = null;
+        }
+
+        OnRoundEnded?.Invoke(won);
+    }
+
+    public RoundDefinition GetRound(int index)
+    {
+        if (index < 0 || index >= rounds.Length)
+            throw new ArgumentOutOfRangeException(nameof(index), "Round index is out of range");
+
+        return rounds[index];
     }
 
     private void HookMechanic(IRoundMechanic mechanic)
@@ -97,44 +112,19 @@ public class RoundManager : MonoBehaviour
         mechanic.OnCompleted -= WinRound;
     }
 
-    private void CleanupMechanic()
-    {
-        if (currentMechanic == null)
-            return;
-
-        currentMechanic.OnValidInput -= HandleValidInput;
-        currentMechanic.OnInvalidInput -= HandleInvalidInput;
-        currentMechanic.OnCompleted -= WinRound;
-
-        currentMechanic = null;
-    }
 
     private void HandleValidInput()
     {
-        currentTaps++;
-        totalTaps++;
-        progressBar.value = currentTaps;
+        OnRoundValidInput?.Invoke();
     }
 
     private void HandleInvalidInput()
     {
-        totalTaps++;
-        Debug.Log("Wrong input");
+        OnRoundInvalidInput?.Invoke();
     }
 
-    private void WinRound()
-    {
-        isActive = false;
-        CleanupMechanic();
-        Debug.Log("Round cleared");
-    }
-
-    private void LoseRound()
-    {
-        isActive = false;
-        CleanupMechanic();
-        Debug.Log("Round lost");
-    }
+    private void WinRound() => EndRound(true);
+    private void LoseRound() => EndRound(false);   
 
     private IRoundMechanic CreateMechanic(RoundMechanic type)
     {
@@ -143,6 +133,7 @@ public class RoundManager : MonoBehaviour
             RoundMechanic.SingleButton => new SingleButtonMECH(),
             RoundMechanic.AlternateButtons => new AlternateButtonsMECH(),
             RoundMechanic.SplitPhase => new SplitPhaseMECH(),
+            RoundMechanic.ButtonSequence => new RandomButtonsMECH(),
             _ => throw new System.Exception("Unknown mechanic")
         };
     }

@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 enum GameState
@@ -11,7 +12,94 @@ enum GameState
 
 public class GameManager : MonoBehaviour
 {
+
+    public event Action<int> OnTotalTapsChanged;
+    public event Action OnRoundChanged;
+    public event Action<bool> OnRoundStarted;
+    public event Action<bool> OnGameEnded;
+    //public event Action<bool> OnGamePaused;
+
+    [SerializeField] private UIManager UIManager;
     [SerializeField] InputReader input;
     [SerializeField] RoundManager rounds;
 
+    [Header("Round details")]
+    private int currentRoundIndex;
+    private int totalRounds;
+    private int totalTaps;
+    private GameState state = GameState.WaitingForStart;
+
+    public int TotalTaps => totalTaps;
+    public int CurrentRound => currentRoundIndex + 1;
+    public int TotalRounds => totalRounds;
+
+    private void Awake()
+    {
+        state = GameState.WaitingForStart;
+    }
+
+    //private int invalidTaps
+    public void StartGame()
+    {
+        totalTaps = 0;
+        currentRoundIndex = 0;
+        totalRounds = rounds.TotalRounds;
+        state = GameState.InGame;
+
+        OnRoundStarted?.Invoke(true);
+        StartNextRound();
+    }
+
+    public void StartNextRound()
+    {
+        RoundDefinition nextRound = rounds.GetRound(currentRoundIndex);
+        rounds.PrepareRound(nextRound);
+    }
+
+    private void OnEnable()
+    {
+        rounds.OnRoundValidInput += HandleRoundValidInput;
+        rounds.OnRoundEnded += HandleRoundEnded;
+    }
+
+    private void OnDisable()
+    {
+        rounds.OnRoundValidInput -= HandleRoundValidInput;
+        rounds.OnRoundEnded -= HandleRoundEnded;
+    }
+
+    private void HandleRoundValidInput()
+    {
+        totalTaps++;
+        OnTotalTapsChanged?.Invoke(totalTaps);
+    }
+
+    private void HandleRoundEnded(bool won)
+    {
+        if(won)
+        {
+            currentRoundIndex++;
+            OnRoundChanged?.Invoke();
+
+            if (currentRoundIndex >= rounds.TotalRounds)
+                EndGame(true);
+            else
+                StartNextRound();
+        }
+        else
+        {
+            EndGame(false);
+        }
+    }
+
+    private void EndGame(bool won)
+    {
+        state = won ? GameState.GameWon : GameState.GameOver;
+
+        if (rounds.IsRoundActive)
+            rounds.EndRound(false);
+
+        OnGameEnded?.Invoke(won);
+        Debug.Log(won ? "You won!" : "You lost!");
+    }
 }

@@ -31,7 +31,7 @@ public class SingleButtonMECH : IRoundMechanic
             currentTaps++;
             OnValidInput?.Invoke();
 
-            if (currentTaps >= requiredTapsForRound && isCompleted == false)
+            if (currentTaps >= requiredTapsForRound)
             {
                 isCompleted = true;
                 OnCompleted?.Invoke();
