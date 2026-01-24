@@ -27,8 +27,8 @@ public class UIManager : MonoBehaviour
 
     private void Start()
     {
-        currentRound.text = $"ラウンド: ";
-        totalTaps.text = $"タップ: ";
+        totalTaps.text = $"ラウンド: -";
+        totalTaps.text = $"タップ: -";
 
         GameManager gm = FindFirstObjectByType<GameManager>();
         gm?.StartGame();
@@ -69,7 +69,7 @@ public class UIManager : MonoBehaviour
     private void OnRoundStarted(RoundDefinition round)
     {
         roundInfo.SetActive(true);
-        currentRound.text = $"ラウンド: {gm.CurrentRound / gm.TotalRounds}";
+        currentRound.text = $"ラウンド: {gm.CurrentRound} / {gm.TotalRounds}";
 
         waitingForEnter = true;
         countdown.text = "PRESS ENTER";

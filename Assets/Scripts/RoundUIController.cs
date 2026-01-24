@@ -16,6 +16,11 @@ public class RoundUIController : MonoBehaviour
     [SerializeField] private Slider progressBar;
     [SerializeField] private TMP_Text timerDuration;
 
+    private void Start()
+    {
+        timerDuration.text = $"Timer: -";
+    }
+
     private void Update()
     {
         if (!roundManager.IsRoundActive)

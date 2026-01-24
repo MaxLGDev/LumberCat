@@ -6,7 +6,8 @@ public enum RoundMechanic
     SingleButton,
     AlternateButtons,
     SplitPhase,
-    ButtonSequence
+    ButtonSequence,
+    CorrectKey
 }
 
 [System.Serializable]
@@ -29,6 +30,8 @@ public class RoundManager : MonoBehaviour
     public event Action<bool> OnRoundEnded;
 
     private IRoundMechanic currentMechanic;
+    private ITickable tickable;
+
     [SerializeField] private InputController inputController;
     [SerializeField] private RoundDefinition[] rounds;
     private RoundDefinition currentRound;
@@ -48,6 +51,8 @@ public class RoundManager : MonoBehaviour
         timer -= Time.deltaTime;
         if (timer <= 0f)
             LoseRound();
+
+        tickable?.Tick(Time.deltaTime);
     }
 
     public void PrepareRound(RoundDefinition round)
@@ -55,6 +60,7 @@ public class RoundManager : MonoBehaviour
         currentRound = round;
 
         currentMechanic = CreateMechanic(round.mechanic);
+        tickable = currentMechanic as ITickable;
         HookMechanic(currentMechanic);
         currentMechanic.StartRound(round.requiredTaps, round.allowedKeys);
 
@@ -77,6 +83,7 @@ public class RoundManager : MonoBehaviour
     public void EndRound(bool won)
     {
         isActive = false;
+        tickable = null;
 
         inputController.EnableInput(false);
         inputController.Unbind();
@@ -134,6 +141,7 @@ public class RoundManager : MonoBehaviour
             RoundMechanic.AlternateButtons => new AlternateButtonsMECH(),
             RoundMechanic.SplitPhase => new SplitPhaseMECH(),
             RoundMechanic.ButtonSequence => new RandomButtonsMECH(),
+            RoundMechanic.CorrectKey => new CorrectKeyMECH(),
             _ => throw new System.Exception("Unknown mechanic")
         };
     }
