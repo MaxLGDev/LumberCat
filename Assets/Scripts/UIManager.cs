@@ -1,6 +1,7 @@
 using UnityEngine;
 using TMPro;
 using System.Collections;
+using UnityEngine.Localization;
 
 public class UIManager : MonoBehaviour
 {
@@ -18,6 +19,15 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject roundInfo;
     [SerializeField] private GameObject winResultScreen;
     [SerializeField] private GameObject loseResultScreen;
+    [SerializeField] private GameObject keySlots;
+
+    [Header("Localization")]
+    [SerializeField] private LocalizedString pressedEnterString;
+    [SerializeField] private LocalizedString countdownString;
+    [SerializeField] private LocalizedString startString;
+    [SerializeField] private LocalizedString roundString;
+    [SerializeField] private LocalizedString tapsString;
+
 
     private bool waitingForEnter = false;
 
@@ -27,10 +37,14 @@ public class UIManager : MonoBehaviour
 
     private void Start()
     {
-        totalTaps.text = $"ラウンド: -";
-        totalTaps.text = $"タップ: -";
+        keySlots.SetActive(false);
+        roundString.Arguments = new object[] { "-"    };
+        currentRound.text = roundString.GetLocalizedString();
 
-        GameManager gm = FindFirstObjectByType<GameManager>();
+        tapsString.Arguments = new object[] { "-" };
+        totalTaps.text = tapsString.GetLocalizedString();
+
+        gm = FindFirstObjectByType<GameManager>();
         gm?.StartGame();
     }
 
@@ -69,10 +83,12 @@ public class UIManager : MonoBehaviour
     private void OnRoundStarted(RoundDefinition round)
     {
         roundInfo.SetActive(true);
-        currentRound.text = $"ラウンド: {gm.CurrentRound} / {gm.TotalRounds}";
+
+        roundString.Arguments = new object[] { gm.CurrentRound };
+        currentRound.text = roundString.GetLocalizedString();   
 
         waitingForEnter = true;
-        countdown.text = "PRESS ENTER";
+        countdown.text = pressedEnterString.GetLocalizedString();
 
         if (countdownCo != null)
         {
@@ -83,21 +99,24 @@ public class UIManager : MonoBehaviour
     }
     private void UpdateTotalTaps(int taps)
     {
-        totalTaps.text = $"Taps: {taps}";
+        tapsString.Arguments = new object[] { taps };
+        totalTaps.text = tapsString.GetLocalizedString();
     }
 
     private IEnumerator CountdownCO()
     {
         for(int i = 3; i > 0; i--)
         {
-            countdown.text = $"{i}...";
+            countdownString.Arguments = new object[] { i };
+            countdown.text = countdownString.GetLocalizedString();
             yield return new WaitForSeconds(1);
         }
 
-        countdown.text = "START!!!";
+        countdown.text = startString.GetLocalizedString() ;
         yield return new WaitForSeconds(0.5f);
 
         roundInfo.SetActive(false);
+        keySlots.SetActive(true);
         roundManager.StartPreparedRound();
     }
 

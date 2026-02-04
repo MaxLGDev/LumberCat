@@ -28,13 +28,23 @@ public class RoundManager : MonoBehaviour
     public event Action OnRoundValidInput;
     public event Action OnRoundInvalidInput;
     public event Action<bool> OnRoundEnded;
+    public event Action<KeyCode[]> OnActiveKeysChanged;
 
     private IRoundMechanic currentMechanic;
     private ITickable tickable;
 
     [SerializeField] private InputController inputController;
     [SerializeField] private RoundDefinition[] rounds;
+    private RoundDefinition[] shuffledRounds;
     private RoundDefinition currentRound;
+
+    [Header("Difficulty Scale")]
+    [SerializeField] private int baseTaps = 10;
+    [SerializeField] private int maxTaps = 30;
+    [SerializeField] private float baseTime = 15f;
+    [SerializeField] private float minTime = 6f;
+
+    public IRoundMechanic CurrentMechanic => currentMechanic;
 
     private float timer;
     private bool isActive;
@@ -55,14 +65,36 @@ public class RoundManager : MonoBehaviour
         tickable?.Tick(Time.deltaTime);
     }
 
-    public void PrepareRound(RoundDefinition round)
+    public void ShuffleRounds()
     {
+        shuffledRounds = (RoundDefinition[])rounds.Clone();
+        int n = shuffledRounds.Length;
+
+        for(int i = 0; i < n - 1; i++)
+        {
+            int j = UnityEngine.Random.Range(i, n);
+            var temp = shuffledRounds[i];
+            shuffledRounds[i] = shuffledRounds[j];
+            shuffledRounds[j] = temp;
+        }
+    }
+
+    public void PrepareRound(RoundDefinition round, int roundIndex)
+    {
+        float t = (float)(roundIndex + 1) / shuffledRounds.Length;
+
+        int taps = Mathf.RoundToInt(Mathf.Lerp(baseTaps, maxTaps, t));
+        float time = Mathf.Lerp(baseTime, minTime, t);
+        float scaledTime = UnityEngine.Random.Range(time * 0.7f, time);
+
         currentRound = round;
+        currentRound.duration = scaledTime;
 
         currentMechanic = CreateMechanic(round.mechanic);
         tickable = currentMechanic as ITickable;
         HookMechanic(currentMechanic);
-        currentMechanic.StartRound(round.requiredTaps, round.allowedKeys);
+
+        currentMechanic.StartRound(taps, round.allowedKeys);
 
         inputController.Bind(currentMechanic.HandleKey);
         inputController.EnableInput(false);
@@ -99,10 +131,10 @@ public class RoundManager : MonoBehaviour
 
     public RoundDefinition GetRound(int index)
     {
-        if (index < 0 || index >= rounds.Length)
+        if (shuffledRounds == null || index < 0 || index >= shuffledRounds.Length)
             throw new ArgumentOutOfRangeException(nameof(index), "Round index is out of range");
 
-        return rounds[index];
+        return shuffledRounds[index];
     }
 
     private void HookMechanic(IRoundMechanic mechanic)
@@ -110,6 +142,8 @@ public class RoundManager : MonoBehaviour
         mechanic.OnValidInput += HandleValidInput;
         mechanic.OnInvalidInput += HandleInvalidInput;
         mechanic.OnCompleted += WinRound;
+
+        mechanic.OnCurrentKeyChanged += keys => OnActiveKeysChanged?.Invoke(keys);
     }
 
     private void UnhookMechanic(IRoundMechanic mechanic)

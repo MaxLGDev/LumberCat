@@ -20,8 +20,8 @@ public class GameManager : MonoBehaviour
     //public event Action<bool> OnGamePaused;
 
     [SerializeField] private UIManager UIManager;
-    [SerializeField] InputReader input;
-    [SerializeField] RoundManager rounds;
+    [SerializeField] private InputReader input;
+    [SerializeField] private RoundManager rounds;
 
     [Header("Round details")]
     private int currentRoundIndex;
@@ -41,6 +41,8 @@ public class GameManager : MonoBehaviour
     //private int invalidTaps
     public void StartGame()
     {
+        rounds.ShuffleRounds();
+
         totalTaps = 0;
         currentRoundIndex = 0;
         totalRounds = rounds.TotalRounds;
@@ -53,7 +55,7 @@ public class GameManager : MonoBehaviour
     public void StartNextRound()
     {
         RoundDefinition nextRound = rounds.GetRound(currentRoundIndex);
-        rounds.PrepareRound(nextRound);
+        rounds.PrepareRound(nextRound, currentRoundIndex);
     }
 
     private void OnEnable()

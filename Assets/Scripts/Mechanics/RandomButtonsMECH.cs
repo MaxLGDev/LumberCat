@@ -6,6 +6,7 @@ public class RandomButtonsMECH : IRoundMechanic
     public event Action OnValidInput;
     public event Action OnInvalidInput;
     public event Action OnCompleted;
+    public event Action<KeyCode[]> OnCurrentKeyChanged;
 
     private int currentTaps;
     private int requiredTapsForRound;
@@ -29,6 +30,8 @@ public class RandomButtonsMECH : IRoundMechanic
         keyPool = allowedKeys;
 
         GetRandomKey();
+
+        OnCurrentKeyChanged?.Invoke(new KeyCode[] { allowedKey });
     }
 
     public void HandleKey(KeyCode key)
@@ -48,10 +51,12 @@ public class RandomButtonsMECH : IRoundMechanic
 
         GetRandomKey();
 
-        while (allowedKey == lastKey)
-            GetRandomKey();
+        while (allowedKey == lastKey) GetRandomKey();
 
-        if(currentTaps >= requiredTapsForRound)
+        // Fire event every time key changes
+        OnCurrentKeyChanged?.Invoke(new KeyCode[] { allowedKey });
+
+        if (currentTaps >= requiredTapsForRound)
         {
             isCompleted = true;
             OnCompleted?.Invoke();

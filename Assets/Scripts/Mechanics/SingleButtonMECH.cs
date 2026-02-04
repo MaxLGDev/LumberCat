@@ -6,11 +6,16 @@ public class SingleButtonMECH : IRoundMechanic
     public event Action OnValidInput;
     public event Action OnInvalidInput;
     public event Action OnCompleted;
+    public event Action<KeyCode[]> OnCurrentKeyChanged;
 
     private int currentTaps;
     private int requiredTapsForRound;
     private bool isCompleted;
+
+    private KeyCode[] keyPool;
     private KeyCode allowedKey;
+
+    public KeyCode CurrentKey => allowedKey;
 
     public void StartRound(int requiredTaps, KeyCode[] allowedKeys)
     {
@@ -18,7 +23,10 @@ public class SingleButtonMECH : IRoundMechanic
         currentTaps = 0;
         isCompleted = false;
 
-        allowedKey = allowedKeys[0];
+        keyPool = allowedKeys;
+        GetRandomKey();
+
+        OnCurrentKeyChanged?.Invoke(new KeyCode[] { allowedKey });
     }
 
     public void HandleKey(KeyCode key)
@@ -26,20 +34,26 @@ public class SingleButtonMECH : IRoundMechanic
         if (isCompleted)
             return;
 
-        if(key == allowedKey)
-        {
-            currentTaps++;
-            OnValidInput?.Invoke();
-
-            if (currentTaps >= requiredTapsForRound)
-            {
-                isCompleted = true;
-                OnCompleted?.Invoke();
-            }
-        }
-        else
+        if (key != allowedKey)
         {
             OnInvalidInput?.Invoke();
+            return;
         }
+
+        currentTaps++;
+        OnValidInput?.Invoke();
+
+        if (currentTaps >= requiredTapsForRound)
+        {
+            isCompleted = true;
+            OnCompleted?.Invoke();
+        }
+    }
+
+    private void GetRandomKey()
+    {
+        int poolIndex = UnityEngine.Random.Range(0, keyPool.Length);
+
+        allowedKey = keyPool[poolIndex];
     }
 }

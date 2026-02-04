@@ -6,46 +6,45 @@ public class AlternateButtonsMECH : IRoundMechanic
     public event Action OnValidInput;
     public event Action OnInvalidInput;
     public event Action OnCompleted;
+    public event Action<KeyCode[]> OnCurrentKeyChanged;
 
     private int currentTaps;
     private int requiredTapsForRound;
     private bool isCompleted;
-    private KeyCode lastKey;
 
-    private KeyCode[] allowedKeys;
+    private KeyCode keyA;
+    private KeyCode keyB;
+    private KeyCode currentKey;
+
+    public KeyCode CurrentKey => currentKey;          // the green key
+    public KeyCode[] AllowedKeys => new KeyCode[] { keyA, keyB };
 
     public void StartRound(int requiredTaps, KeyCode[] allowedKeys)
     {
-        this.requiredTapsForRound = requiredTaps;
+        requiredTapsForRound = requiredTaps;
+        if (allowedKeys == null || allowedKeys.Length < 2)
+            throw new ArgumentException("AlternateButtons requires at least 2 keys");
+
+        keyA = allowedKeys[0];
+        keyB = allowedKeys[1];
+
         currentTaps = 0;
         isCompleted = false;
-        lastKey = KeyCode.None;
 
-        this.allowedKeys = allowedKeys;
-
-        if (allowedKeys == null || allowedKeys.Length < 2)
-            throw new ArgumentException("AlternateButtons requires 2 keys");
+        currentKey = keyA; // always start with first key
+        OnCurrentKeyChanged?.Invoke(new KeyCode[] { currentKey });
     }
-
 
     public void HandleKey(KeyCode key)
     {
-        if (isCompleted)
-            return;
+        if (isCompleted) return;
 
-        if (key != allowedKeys[0] && key != allowedKeys[1])
+        if (key != currentKey)
         {
             OnInvalidInput?.Invoke();
             return;
         }
 
-        if (key == lastKey)
-        {
-            OnInvalidInput?.Invoke();
-            return;
-        }
-
-        lastKey = key;
         currentTaps++;
         OnValidInput?.Invoke();
 
@@ -53,6 +52,11 @@ public class AlternateButtonsMECH : IRoundMechanic
         {
             isCompleted = true;
             OnCompleted?.Invoke();
+            return;
         }
+
+        // Alternate keys
+        currentKey = (currentKey == keyA) ? keyB : keyA;
+        OnCurrentKeyChanged?.Invoke(new KeyCode[] { currentKey });
     }
 }

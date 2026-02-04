@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public interface IRoundMechanic
@@ -8,4 +9,7 @@ public interface IRoundMechanic
 
     void StartRound(int requiredTaps, KeyCode[] allowedKeys);
     void HandleKey(KeyCode key);
+
+    event Action<KeyCode[]> OnCurrentKeyChanged;
+    KeyCode CurrentKey { get; }
 }

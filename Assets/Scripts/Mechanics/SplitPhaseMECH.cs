@@ -6,6 +6,7 @@ public class SplitPhaseMECH : IRoundMechanic
     public event Action OnValidInput;
     public event Action OnInvalidInput;
     public event Action OnCompleted;
+    public event Action<KeyCode[]> OnCurrentKeyChanged;
 
     private int currentTaps;
     private int requiredTapsForRound;
@@ -13,37 +14,42 @@ public class SplitPhaseMECH : IRoundMechanic
 
     private KeyCode keyA;
     private KeyCode keyB;
+    private KeyCode currentKey;
+
+    // Expose the currently active key for UI
+    public KeyCode CurrentKey => currentKey;
 
     public void StartRound(int requiredTaps, KeyCode[] allowedKeys)
     {
-        this.requiredTapsForRound = requiredTaps;
+        requiredTapsForRound = requiredTaps;
+
+        if (allowedKeys == null || allowedKeys.Length < 2)
+            throw new ArgumentException("SplitPhase requires at least 2 keys");
+
+        // Pick 2 random keys
+        int indexA = UnityEngine.Random.Range(0, allowedKeys.Length);
+        int indexB;
+        do
+        {
+            indexB = UnityEngine.Random.Range(0, allowedKeys.Length);
+        } while (indexB == indexA);
+
+        keyA = allowedKeys[indexA];
+        keyB = allowedKeys[indexB];
+
         currentTaps = 0;
         isCompleted = false;
 
-        if (allowedKeys == null || allowedKeys.Length < 2)
-            throw new ArgumentException("AlternateButtons requires 2 keys");
-
-        keyA = allowedKeys[0];
-        keyB = allowedKeys[1];
+        currentKey = keyA; // first half starts with keyA
+        // Send both keys to UI so it can display them
+        OnCurrentKeyChanged?.Invoke(new KeyCode[] { keyA, keyB });
     }
 
     public void HandleKey(KeyCode key)
     {
-        if (isCompleted)
-            return;
+        if (isCompleted) return;
 
-        if (key != keyA && key != keyB)
-        {
-            OnInvalidInput?.Invoke();
-            return;
-        }
-
-        if (!InSecondPhase && key != keyA)
-        {
-            OnInvalidInput?.Invoke();
-            return;
-        }
-        else if(InSecondPhase && key != keyB)
+        if (key != currentKey)
         {
             OnInvalidInput?.Invoke();
             return;
@@ -56,9 +62,15 @@ public class SplitPhaseMECH : IRoundMechanic
         {
             isCompleted = true;
             OnCompleted?.Invoke();
+            return;
+        }
+
+        // Switch to second key at halfway point
+        if (currentTaps == (requiredTapsForRound + 1) / 2)
+        {
+            currentKey = keyB;
+            // Keep both keys visible, UI highlights the active one
+            OnCurrentKeyChanged?.Invoke(new KeyCode[] { keyA, keyB });
         }
     }
-
-    int SplitPoint => (requiredTapsForRound + 1) / 2;
-    bool InSecondPhase => currentTaps >= SplitPoint;
 }
