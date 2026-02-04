@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using TMPro;
 using UnityEngine.Localization;
 using System;
+using System.Collections.Generic;
 
 public class RoundPresentation
 {
@@ -10,9 +11,20 @@ public class RoundPresentation
     public string description;
 }
 
+[Serializable]
+public struct KeySpritePair
+{
+    public KeyCode key;
+    public Sprite sprite;
+}
+
 public class RoundUIController : MonoBehaviour
 {
     [SerializeField] private RoundManager roundManager;
+
+    [SerializeField] private KeySpritePair[] keySpritePairs;
+
+    private Dictionary<KeyCode, Sprite> keySpriteMap;
 
     [Header("UI Details")]
     [SerializeField] private Slider progressBar;
@@ -43,6 +55,26 @@ public class RoundUIController : MonoBehaviour
 
         timerInactiveString.RefreshString();
         timerActiveString.RefreshString();
+
+        // -- Build dictionary map --
+        keySpriteMap  = new Dictionary<KeyCode, Sprite>();
+
+        foreach(var pair in keySpritePairs)
+        {
+            if(pair.sprite == null)
+            {
+                Debug.LogError($"KeySpritePair for {pair.key} has NO sprite assigned", this);
+                continue;
+            }
+
+            if (keySpriteMap.ContainsKey(pair.key))
+            {
+                Debug.LogError($"Duplicate sprite mapping for key {pair.key}", this);
+                continue;
+            }
+
+            keySpriteMap.Add(pair.key, pair.sprite);
+        }
     }
 
 
@@ -64,17 +96,17 @@ public class RoundUIController : MonoBehaviour
 
         int slotCount = keySlots.Length;
 
+        if (keys == null || keys.Length == 0) return;
+
         // Clear all slots
         for (int i = 0; i < slotCount; i++)
         {
-            keySlots[i].sprite = null;
-            keySlots[i].color = Color.white;
+            keySlots[i].enabled = false;
+
 
             if (keyOutlines != null && i < keyOutlines.Length)
                 keyOutlines[i].color = Color.clear;
         }
-
-        if (keys == null || keys.Length == 0) return;
 
         // Get active key from mechanic
         KeyCode activeKey = KeyCode.None;
@@ -95,7 +127,10 @@ public class RoundUIController : MonoBehaviour
             // Get the correct sprite for the key
             Sprite keySprite = GetSpriteForKey(keys[i]);
             if (keySprite != null)
+            {
                 keySlots[slot].sprite = keySprite;
+                keySlots[slot].enabled = true;
+            }
 
             // Highlight outline
             if (keyOutlines != null && slot < keyOutlines.Length)
@@ -108,16 +143,20 @@ public class RoundUIController : MonoBehaviour
     // Map KeyCode to your sprites safely
     private Sprite GetSpriteForKey(KeyCode key)
     {
-        foreach (var sprite in keySprites)
+        if(keySpriteMap == null)
         {
-            if (sprite.name.Equals(key.ToString(), StringComparison.OrdinalIgnoreCase))
-                return sprite;
+            Debug.LogError("Key sprite map not initialized", this);
+            return null;
         }
-        return null; // fallback
+
+        if(!keySpriteMap.TryGetValue(key, out var sprite))
+        {
+            Debug.LogError($"No sprite mapped for key: {key}");
+            return null;
+        }
+
+        return sprite;
     }
-
-
-
 
     public void IncrementRoundBar()
     {
@@ -132,6 +171,14 @@ public class RoundUIController : MonoBehaviour
         roundManager.OnActiveKeysChanged += ShowAllowedKeys;
     }
 
+    private void OnDisable()
+    {
+        roundManager.OnRoundStarted -= InitializeRoundUI;
+        roundManager.OnRoundValidInput -= IncrementRoundBar;
+        roundManager.OnRoundEnded -= ShowRoundEnd;
+        roundManager.OnActiveKeysChanged -= ShowAllowedKeys;
+    }
+
     private void ShowRoundEnd(bool won)
     {
         timerDuration.text = timerInactiveText;
@@ -142,13 +189,13 @@ public class RoundUIController : MonoBehaviour
             Debug.Log("unlucky");
     }
 
-    private void InitializeRoundUI(RoundDefinition round)
+    private void InitializeRoundUI()
     {
         progressBar.minValue = 0;
-        progressBar.maxValue = round.requiredTaps;
+        progressBar.maxValue = roundManager.CurrentRequiredTaps;
         progressBar.value = 0;
 
-        Debug.Log($"[DEBUG] Required taps for this round: {round.requiredTaps}");
+        Debug.Log($"[DEBUG] Required taps for this round: {roundManager.CurrentRequiredTaps}");
 
         if (roundManager.CurrentMechanic != null)
             roundManager.CurrentMechanic.OnCurrentKeyChanged += ShowAllowedKeys;

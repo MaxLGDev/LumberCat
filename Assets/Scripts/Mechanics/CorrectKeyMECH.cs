@@ -86,7 +86,7 @@ public class CorrectKeyMECH : IRoundMechanic, ITickable
 
     private void ScheduleNextSwitch()
     {
-        nextSwitchTime = UnityEngine.Random.Range(0.3f, 0.75f); // random switch interval
+        nextSwitchTime = UnityEngine.Random.Range(1f, 2.5f); // random switch interval
     }
 
     private void RollChosenKeys()

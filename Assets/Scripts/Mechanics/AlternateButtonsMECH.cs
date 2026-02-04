@@ -21,18 +21,28 @@ public class AlternateButtonsMECH : IRoundMechanic
 
     public void StartRound(int requiredTaps, KeyCode[] allowedKeys)
     {
-        requiredTapsForRound = requiredTaps;
         if (allowedKeys == null || allowedKeys.Length < 2)
             throw new ArgumentException("AlternateButtons requires at least 2 keys");
 
-        keyA = allowedKeys[0];
-        keyB = allowedKeys[1];
-
+        requiredTapsForRound = requiredTaps;
         currentTaps = 0;
         isCompleted = false;
 
-        currentKey = keyA; // always start with first key
-        OnCurrentKeyChanged?.Invoke(new KeyCode[] { currentKey });
+        int first = UnityEngine.Random.Range(0, allowedKeys.Length);
+        int second;
+
+        do
+        {
+            second = UnityEngine.Random.Range(0, allowedKeys.Length);
+        }
+        while (second == first);
+
+        keyA = allowedKeys[first];
+        keyB = allowedKeys[second];
+
+        currentKey = UnityEngine.Random.value < 0.5f ? keyA : keyB;
+
+        OnCurrentKeyChanged?.Invoke(new KeyCode[] { keyA, keyB });
     }
 
     public void HandleKey(KeyCode key)
@@ -57,6 +67,6 @@ public class AlternateButtonsMECH : IRoundMechanic
 
         // Alternate keys
         currentKey = (currentKey == keyA) ? keyB : keyA;
-        OnCurrentKeyChanged?.Invoke(new KeyCode[] { currentKey });
+        OnCurrentKeyChanged?.Invoke(new KeyCode[] { keyA, keyB });
     }
 }

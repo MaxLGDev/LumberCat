@@ -24,7 +24,7 @@ public class RoundDefinition
 
 public class RoundManager : MonoBehaviour
 {
-    public event Action<RoundDefinition> OnRoundStarted;
+    public event Action OnRoundStarted;
     public event Action OnRoundValidInput;
     public event Action OnRoundInvalidInput;
     public event Action<bool> OnRoundEnded;
@@ -39,8 +39,8 @@ public class RoundManager : MonoBehaviour
     private RoundDefinition currentRound;
 
     [Header("Difficulty Scale")]
-    [SerializeField] private int baseTaps = 10;
-    [SerializeField] private int maxTaps = 30;
+    [SerializeField] private int baseTaps = 30;
+    [SerializeField] private int maxTaps = 60;
     [SerializeField] private float baseTime = 15f;
     [SerializeField] private float minTime = 6f;
 
@@ -48,6 +48,9 @@ public class RoundManager : MonoBehaviour
 
     private float timer;
     private bool isActive;
+
+    public int CurrentRequiredTaps {get; private set;}
+    public int CurrentTaps { get; private set;}
 
     public bool IsRoundActive => isActive;
     public float RemainingTime => timer;
@@ -87,6 +90,9 @@ public class RoundManager : MonoBehaviour
         float time = Mathf.Lerp(baseTime, minTime, t);
         float scaledTime = UnityEngine.Random.Range(time * 0.7f, time);
 
+        CurrentRequiredTaps = taps;
+        CurrentTaps = 0;
+
         currentRound = round;
         currentRound.duration = scaledTime;
 
@@ -99,7 +105,7 @@ public class RoundManager : MonoBehaviour
         inputController.Bind(currentMechanic.HandleKey);
         inputController.EnableInput(false);
 
-        OnRoundStarted?.Invoke(round);
+        OnRoundStarted?.Invoke();
     }
 
     public void StartPreparedRound ()
@@ -156,6 +162,7 @@ public class RoundManager : MonoBehaviour
 
     private void HandleValidInput()
     {
+        CurrentTaps++;
         OnRoundValidInput?.Invoke();
     }
 

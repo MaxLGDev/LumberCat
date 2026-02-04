@@ -80,7 +80,7 @@ public class UIManager : MonoBehaviour
             inputReader.OnKeyPressed -= HandleKeyPressed;
     }
 
-    private void OnRoundStarted(RoundDefinition round)
+    private void OnRoundStarted()
     {
         roundInfo.SetActive(true);
 

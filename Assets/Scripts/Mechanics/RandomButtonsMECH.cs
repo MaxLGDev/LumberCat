@@ -13,10 +13,10 @@ public class RandomButtonsMECH : IRoundMechanic
     private bool isCompleted;
 
     private KeyCode[] keyPool;
-    private KeyCode allowedKey;
-    private KeyCode lastKey;
+    private KeyCode currentKey;
+    private KeyCode nextKey;
 
-    public KeyCode CurrentKey => allowedKey;
+    public KeyCode CurrentKey => currentKey;
 
     public void StartRound(int requiredTaps, KeyCode[] allowedKeys)
     {
@@ -29,9 +29,10 @@ public class RandomButtonsMECH : IRoundMechanic
 
         keyPool = allowedKeys;
 
-        GetRandomKey();
+        currentKey = GetRandomKeyDifferentFrom(KeyCode.None);
+        nextKey = GetRandomKeyDifferentFrom(currentKey);
 
-        OnCurrentKeyChanged?.Invoke(new KeyCode[] { allowedKey });
+        OnCurrentKeyChanged?.Invoke(new KeyCode[] { currentKey, nextKey });
     }
 
     public void HandleKey(KeyCode key)
@@ -39,7 +40,7 @@ public class RandomButtonsMECH : IRoundMechanic
         if (isCompleted)
             return;
 
-        if(key != allowedKey)
+        if(key != currentKey)
         {
             OnInvalidInput?.Invoke();
             return;
@@ -47,26 +48,29 @@ public class RandomButtonsMECH : IRoundMechanic
 
         currentTaps++;
         OnValidInput?.Invoke();
-        lastKey = allowedKey;
-
-        GetRandomKey();
-
-        while (allowedKey == lastKey) GetRandomKey();
-
-        // Fire event every time key changes
-        OnCurrentKeyChanged?.Invoke(new KeyCode[] { allowedKey });
 
         if (currentTaps >= requiredTapsForRound)
         {
             isCompleted = true;
             OnCompleted?.Invoke();
+            return;
         }
+
+        currentKey = nextKey;
+        nextKey = GetRandomKeyDifferentFrom(currentKey);
+
+        OnCurrentKeyChanged?.Invoke(new[] { currentKey, nextKey });
     }
 
-    private void GetRandomKey()
+    private KeyCode GetRandomKeyDifferentFrom(KeyCode avoid)
     {
-        int poolIndex = UnityEngine.Random.Range(0, keyPool.Length);
+        KeyCode key;
+        do
+        {
+            key = keyPool[UnityEngine.Random.Range(0, keyPool.Length)];
+        }
+        while (key == avoid);
 
-        allowedKey = keyPool[poolIndex];
+        return key;
     }
 }
