@@ -104,7 +104,5 @@ public class CorrectKeyMECH : IRoundMechanic, ITickable
 
         // Always send all keys so UI can display them, highlighting CurrentKey
         OnCurrentKeyChanged?.Invoke(chosenKeys);
-
-        Debug.Log($"Keys: {chosenKeys[0]}, {chosenKeys[1]}, {chosenKeys[2]} | Green: {allowedKey}");
     }
 }

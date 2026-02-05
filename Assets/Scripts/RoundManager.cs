@@ -29,6 +29,7 @@ public class RoundManager : MonoBehaviour
     public event Action OnRoundInvalidInput;
     public event Action<bool> OnRoundEnded;
     public event Action<KeyCode[]> OnActiveKeysChanged;
+    private Action<KeyCode[]> currentKeyChangedHandler;
 
     private IRoundMechanic currentMechanic;
     private ITickable tickable;
@@ -46,6 +47,7 @@ public class RoundManager : MonoBehaviour
     public int CurrentProgress { get; private set; }
 
     public IRoundMechanic CurrentMechanic => currentMechanic;
+    public RoundMechanic CurrentMechanicType { get; private set; }
 
     private float timer;
     private bool isActive;
@@ -91,22 +93,37 @@ public class RoundManager : MonoBehaviour
         float time = Mathf.Lerp(baseTime, minTime, t);
         float scaledTime = UnityEngine.Random.Range(time * 0.7f, time);
 
+        if (round.mechanic == RoundMechanic.ButtonSequence)
+            scaledTime *= 3f;
+
         CurrentProgress = 0;
         CurrentRequiredTaps = taps;
 
         currentRound = round;
         currentRound.duration = scaledTime;
 
+        CurrentMechanicType = round.mechanic;
+
+        // Clear old mechanic first if it exists
+        if (currentMechanic != null)
+        {
+            UnhookMechanic(currentMechanic);
+            currentMechanic = null;
+        }
+
+        OnActiveKeysChanged?.Invoke(Array.Empty<KeyCode>());
+
         currentMechanic = CreateMechanic(round.mechanic);
         tickable = currentMechanic as ITickable;
         HookMechanic(currentMechanic);
 
-        currentMechanic.StartRound(round.allowedKeys);
-
         inputController.Bind(currentMechanic.HandleKey);
         inputController.EnableInput(false);
 
+        // Fire OnRoundStarted BEFORE StartRound so UI can subscribe first!
         OnRoundStarted?.Invoke();
+
+        currentMechanic.StartRound(round.allowedKeys);
     }
 
     public void StartPreparedRound ()
@@ -150,12 +167,20 @@ public class RoundManager : MonoBehaviour
         mechanic.OnInvalidInput += HandleInvalidInput;
 
         mechanic.OnCurrentKeyChanged += keys => OnActiveKeysChanged?.Invoke(keys);
+        mechanic.OnCurrentKeyChanged += currentKeyChangedHandler;
+
     }
 
     private void UnhookMechanic(IRoundMechanic mechanic)
     {
         mechanic.OnValidInput -= HandleValidInput;
         mechanic.OnInvalidInput -= HandleInvalidInput;
+
+        if (currentKeyChangedHandler != null)
+        {
+            mechanic.OnCurrentKeyChanged -= currentKeyChangedHandler;
+            currentKeyChangedHandler = null;
+        }
     }
 
 
