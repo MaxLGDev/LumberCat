@@ -43,6 +43,7 @@ public class RoundManager : MonoBehaviour
     [SerializeField] private int maxTaps = 60;
     [SerializeField] private float baseTime = 15f;
     [SerializeField] private float minTime = 6f;
+    public int CurrentProgress { get; private set; }
 
     public IRoundMechanic CurrentMechanic => currentMechanic;
 
@@ -90,8 +91,8 @@ public class RoundManager : MonoBehaviour
         float time = Mathf.Lerp(baseTime, minTime, t);
         float scaledTime = UnityEngine.Random.Range(time * 0.7f, time);
 
+        CurrentProgress = 0;
         CurrentRequiredTaps = taps;
-        CurrentTaps = 0;
 
         currentRound = round;
         currentRound.duration = scaledTime;
@@ -100,7 +101,7 @@ public class RoundManager : MonoBehaviour
         tickable = currentMechanic as ITickable;
         HookMechanic(currentMechanic);
 
-        currentMechanic.StartRound(taps, round.allowedKeys);
+        currentMechanic.StartRound(round.allowedKeys);
 
         inputController.Bind(currentMechanic.HandleKey);
         inputController.EnableInput(false);
@@ -147,7 +148,6 @@ public class RoundManager : MonoBehaviour
     {
         mechanic.OnValidInput += HandleValidInput;
         mechanic.OnInvalidInput += HandleInvalidInput;
-        mechanic.OnCompleted += WinRound;
 
         mechanic.OnCurrentKeyChanged += keys => OnActiveKeysChanged?.Invoke(keys);
     }
@@ -156,18 +156,31 @@ public class RoundManager : MonoBehaviour
     {
         mechanic.OnValidInput -= HandleValidInput;
         mechanic.OnInvalidInput -= HandleInvalidInput;
-        mechanic.OnCompleted -= WinRound;
     }
 
 
     private void HandleValidInput()
     {
-        CurrentTaps++;
+        if (!isActive) return;
+
+        CurrentProgress++;
+
+        if (currentMechanic is IProgressAware progressAware)
+        {
+            progressAware.OnProgressChanged(CurrentProgress, CurrentRequiredTaps);
+        }
+
         OnRoundValidInput?.Invoke();
+
+        if (CurrentProgress >= CurrentRequiredTaps)
+            EndRound(true);
     }
 
     private void HandleInvalidInput()
     {
+        if (!isActive) return;
+
+        CurrentProgress = Mathf.Max(0, CurrentProgress - 1);
         OnRoundInvalidInput?.Invoke();
     }
 

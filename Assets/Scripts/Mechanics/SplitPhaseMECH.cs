@@ -1,30 +1,27 @@
 using System;
 using UnityEngine;
 
-public class SplitPhaseMECH : IRoundMechanic
+public class SplitPhaseMECH : IRoundMechanic, IProgressAware
 {
     public event Action OnValidInput;
     public event Action OnInvalidInput;
-    public event Action OnCompleted;
     public event Action<KeyCode[]> OnCurrentKeyChanged;
-
-    private int currentTaps;
-    private int requiredTapsForRound;
-    private bool isCompleted;
 
     private KeyCode keyA;
     private KeyCode keyB;
     private KeyCode currentKey;
 
+    private bool inSecondPhase;
+
     // Expose the currently active key for UI
     public KeyCode CurrentKey => currentKey;
 
-    public void StartRound(int requiredTaps, KeyCode[] allowedKeys)
+    public void StartRound(KeyCode[] allowedKeys)
     {
-        requiredTapsForRound = requiredTaps;
-
         if (allowedKeys == null || allowedKeys.Length < 2)
             throw new ArgumentException("SplitPhase requires at least 2 keys");
+
+        inSecondPhase = false;
 
         // Pick 2 random keys
         int indexA = UnityEngine.Random.Range(0, allowedKeys.Length);
@@ -37,9 +34,6 @@ public class SplitPhaseMECH : IRoundMechanic
         keyA = allowedKeys[indexA];
         keyB = allowedKeys[indexB];
 
-        currentTaps = 0;
-        isCompleted = false;
-
         currentKey = keyA; // first half starts with keyA
         // Send both keys to UI so it can display them
         OnCurrentKeyChanged?.Invoke(new KeyCode[] { keyA, keyB });
@@ -47,30 +41,30 @@ public class SplitPhaseMECH : IRoundMechanic
 
     public void HandleKey(KeyCode key)
     {
-        if (isCompleted) return;
-
         if (key != currentKey)
         {
+            // Phase 1: reset (allowed)
+            if (!inSecondPhase)
+            {
+                currentKey = keyA;
+                OnCurrentKeyChanged?.Invoke(new[] { keyA, keyB });
+            }
+
+            // Phase 2: NO RESET, key stays keyB
             OnInvalidInput?.Invoke();
             return;
         }
 
-        currentTaps++;
         OnValidInput?.Invoke();
+    }
 
-        if (currentTaps >= requiredTapsForRound)
+    public void OnProgressChanged(int current, int required)
+    {
+        if (!inSecondPhase && current >= required / 2)
         {
-            isCompleted = true;
-            OnCompleted?.Invoke();
-            return;
-        }
-
-        // Switch to second key at halfway point
-        if (currentTaps == (requiredTapsForRound + 1) / 2)
-        {
+            inSecondPhase = true;
             currentKey = keyB;
-            // Keep both keys visible, UI highlights the active one
-            OnCurrentKeyChanged?.Invoke(new KeyCode[] { keyA, keyB });
+            OnCurrentKeyChanged?.Invoke(new[] { keyA, keyB });
         }
     }
 }

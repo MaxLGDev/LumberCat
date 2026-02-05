@@ -87,6 +87,8 @@ public class RoundUIController : MonoBehaviour
         if (string.IsNullOrEmpty(timerActiveFormat))
             return;
 
+        progressBar.value = roundManager.CurrentProgress;
+
         timerDuration.text = $"{timerActiveFormat}{roundManager.RemainingTime:F3}";
     }
 
@@ -158,15 +160,9 @@ public class RoundUIController : MonoBehaviour
         return sprite;
     }
 
-    public void IncrementRoundBar() => progressBar.value += 1;
-
-    public void DecrementRoundBar() => progressBar.value = Mathf.Max(progressBar.value - 1, 0);
-
     private void OnEnable()
     {
         roundManager.OnRoundStarted += InitializeRoundUI;
-        roundManager.OnRoundValidInput += IncrementRoundBar;
-        roundManager.OnRoundInvalidInput += DecrementRoundBar;
         roundManager.OnRoundEnded += ShowRoundEnd;
         roundManager.OnActiveKeysChanged += ShowAllowedKeys;
     }
@@ -174,8 +170,6 @@ public class RoundUIController : MonoBehaviour
     private void OnDisable()
     {
         roundManager.OnRoundStarted -= InitializeRoundUI;
-        roundManager.OnRoundValidInput -= IncrementRoundBar;
-        roundManager.OnRoundInvalidInput -= DecrementRoundBar;
         roundManager.OnRoundEnded -= ShowRoundEnd;
         roundManager.OnActiveKeysChanged -= ShowAllowedKeys;
     }

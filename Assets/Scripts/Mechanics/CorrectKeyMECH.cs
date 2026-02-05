@@ -5,12 +5,7 @@ public class CorrectKeyMECH : IRoundMechanic, ITickable
 {
     public event Action OnValidInput;
     public event Action OnInvalidInput;
-    public event Action OnCompleted;
     public event Action<KeyCode[]> OnCurrentKeyChanged;
-
-    private int currentTaps;
-    private int requiredTapsForRound;
-    private bool isCompleted;
 
     private KeyCode[] keyPool;
     private KeyCode[] chosenKeys;
@@ -23,16 +18,10 @@ public class CorrectKeyMECH : IRoundMechanic, ITickable
     // Expose the currently active (green) key
     public KeyCode CurrentKey => allowedKey;
 
-    public void StartRound(int requiredTaps, KeyCode[] allowedKeys)
+    public void StartRound(KeyCode[] allowedKeys)
     {
-        requiredTapsForRound = requiredTaps;
-
         if (allowedKeys == null || allowedKeys.Length < 3)
             throw new ArgumentException("The key pool requires at least 3 keys");
-
-        this.requiredTapsForRound = requiredTaps;
-        currentTaps = 0;
-        isCompleted = false;
 
         keyPool = allowedKeys;
         chosenKeys = new KeyCode[3];
@@ -51,28 +40,17 @@ public class CorrectKeyMECH : IRoundMechanic, ITickable
 
     public void HandleKey(KeyCode key)
     {
-        if (isCompleted) return;
-
         if (key != allowedKey)
         {
             OnInvalidInput?.Invoke();
             return;
         }
 
-        currentTaps++;
         OnValidInput?.Invoke();
-
-        if (currentTaps >= requiredTapsForRound)
-        {
-            isCompleted = true;
-            OnCompleted?.Invoke();
-        }
     }
 
     public void Tick(float deltaTime)
     {
-        if (isCompleted) return;
-
         switchTimer += deltaTime;
 
         if (switchTimer >= nextSwitchTime)

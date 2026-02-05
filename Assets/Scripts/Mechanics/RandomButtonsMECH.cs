@@ -5,12 +5,7 @@ public class RandomButtonsMECH : IRoundMechanic
 {
     public event Action OnValidInput;
     public event Action OnInvalidInput;
-    public event Action OnCompleted;
     public event Action<KeyCode[]> OnCurrentKeyChanged;
-
-    private int currentTaps;
-    private int requiredTapsForRound;
-    private bool isCompleted;
 
     private KeyCode[] keyPool;
     private KeyCode currentKey;
@@ -18,12 +13,8 @@ public class RandomButtonsMECH : IRoundMechanic
 
     public KeyCode CurrentKey => currentKey;
 
-    public void StartRound(int requiredTaps, KeyCode[] allowedKeys)
+    public void StartRound(KeyCode[] allowedKeys)
     {
-        this.requiredTapsForRound = requiredTaps;
-        currentTaps = 0;
-        isCompleted = false;
-
         if (allowedKeys == null || allowedKeys.Length < 2)
             throw new ArgumentException("The key pool requires more than 2 keys");
 
@@ -37,24 +28,13 @@ public class RandomButtonsMECH : IRoundMechanic
 
     public void HandleKey(KeyCode key)
     {
-        if (isCompleted)
-            return;
-
         if(key != currentKey)
         {
             OnInvalidInput?.Invoke();
             return;
         }
 
-        currentTaps++;
         OnValidInput?.Invoke();
-
-        if (currentTaps >= requiredTapsForRound)
-        {
-            isCompleted = true;
-            OnCompleted?.Invoke();
-            return;
-        }
 
         currentKey = nextKey;
         nextKey = GetRandomKeyDifferentFrom(currentKey);
