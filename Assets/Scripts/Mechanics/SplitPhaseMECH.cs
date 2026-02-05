@@ -60,10 +60,20 @@ public class SplitPhaseMECH : IRoundMechanic, IProgressAware
 
     public void OnProgressChanged(int current, int required)
     {
-        if (!inSecondPhase && current >= required / 2)
+        int halfPoint = required / 2;
+
+        // Enter phase 2 at 50%
+        if (!inSecondPhase && current >= halfPoint)
         {
             inSecondPhase = true;
             currentKey = keyB;
+            OnCurrentKeyChanged?.Invoke(new[] { keyA, keyB });
+        }
+        // Only drop back to phase 1 if you fall significantly below (45%)
+        else if (inSecondPhase && current < halfPoint - (required / 10))
+        {
+            inSecondPhase = false;
+            currentKey = keyA;
             OnCurrentKeyChanged?.Invoke(new[] { keyA, keyB });
         }
     }
