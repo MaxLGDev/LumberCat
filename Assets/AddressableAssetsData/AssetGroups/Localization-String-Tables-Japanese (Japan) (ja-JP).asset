@@ -10,19 +10,21 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
-  m_Name: Localization-Assets-Shared
+  m_Name: Localization-String-Tables-Japanese (Japan) (ja-JP)
   m_EditorClassIdentifier: Unity.Addressables.Editor::UnityEditor.AddressableAssets.Settings.AddressableAssetGroup
-  m_GroupName: Localization-Assets-Shared
-  m_GUID: 79f1c0ad6276f6042bddd5b179adb2c1
+  m_GroupName: Localization-String-Tables-Japanese (Japan) (ja-JP)
+  m_GUID: 50d312abfd84a1740a4eb9f4141b9598
   m_SerializeEntries:
-  - m_GUID: 58268595e4d868b4f91efafec450b483
-    m_Address: Assets/Localization/Locales/InGame Labels2 Shared Data.asset
+  - m_GUID: 1cfb7434b2cb535489ffb2e3bec0c12f
+    m_Address: InGame Labels_ja-JP
     m_ReadOnly: 1
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - Locale-ja-JP
+    - Preload
     FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 1
   m_Settings: {fileID: 11400000, guid: 3d041112943c2bc45ba475f500f4e198, type: 2}
   m_SchemaSet:
     m_Schemas:
-    - {fileID: 11400000, guid: 47ece06314583bc43820ff9c12dc193f, type: 2}
-    - {fileID: 11400000, guid: 56d1a9775f1b6d34f91140d77cd7ce8d, type: 2}
+    - {fileID: 11400000, guid: 053d44c7b6f133b42bd4f75a9d77a7f0, type: 2}
+    - {fileID: 11400000, guid: f572b2e551eb7c745a8761cde5a116a7, type: 2}

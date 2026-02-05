@@ -61,16 +61,23 @@ public class GameManager : MonoBehaviour
     private void OnEnable()
     {
         rounds.OnRoundValidInput += HandleRoundValidInput;
+        rounds.OnRoundInvalidInput += HandleRoundInvalidInput;
         rounds.OnRoundEnded += HandleRoundEnded;
     }
 
     private void OnDisable()
     {
         rounds.OnRoundValidInput -= HandleRoundValidInput;
+        rounds.OnRoundInvalidInput -= HandleRoundInvalidInput;
         rounds.OnRoundEnded -= HandleRoundEnded;
     }
 
     private void HandleRoundValidInput()
+    {
+        totalTaps++;
+        OnTotalTapsChanged?.Invoke(totalTaps);
+    }
+    private void HandleRoundInvalidInput()
     {
         totalTaps++;
         OnTotalTapsChanged?.Invoke(totalTaps);

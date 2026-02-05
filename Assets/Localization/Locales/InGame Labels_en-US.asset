@@ -10,54 +10,54 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
-  m_Name: InGame Labels_en
+  m_Name: InGame Labels_en-US
   m_EditorClassIdentifier: Unity.Localization::UnityEngine.Localization.Tables.StringTable
   m_LocaleId:
-    m_Code: en
-  m_SharedData: {fileID: 11400000, guid: 8af0ca0f26fbe594fb08e64734036188, type: 2}
+    m_Code: en-US
+  m_SharedData: {fileID: 11400000, guid: 58268595e4d868b4f91efafec450b483, type: 2}
   m_Metadata:
     m_Items:
-    - rid: 8328752293519556859
+    - rid: 8328752321218215937
   m_TableData:
-  - m_Id: 208480772096
+  - m_Id: 47096537088
     m_Localized: '{0}...'
     m_Metadata:
       m_Items: []
-  - m_Id: 1097375424512
-    m_Localized: START!!!
+  - m_Id: 509015236608
+    m_Localized: 'Timer: -'
     m_Metadata:
       m_Items: []
-  - m_Id: 6558698971136
-    m_Localized: Press Enter to start...
-    m_Metadata:
-      m_Items: []
-  - m_Id: 6649811836928
-    m_Localized: 'Taps: {0}'
-    m_Metadata:
-      m_Items:
-      - rid: 8328752293519556859
-  - m_Id: 19663315279872
-    m_Localized: 'Round: {0} / 5'
-    m_Metadata:
-      m_Items:
-      - rid: 8328752293519556859
-  - m_Id: 24791913078784
+  - m_Id: 209399324672
     m_Localized: 'Timer: {0}'
     m_Metadata:
       m_Items:
-      - rid: 8328752293519556859
-  - m_Id: 29113312878592
-    m_Localized: 'Timer: -'
+      - rid: 8328752321218215937
+  - m_Id: 207662882816
+    m_Localized: 'Round: {0} / 5'
+    m_Metadata:
+      m_Items:
+      - rid: 8328752321218215937
+  - m_Id: 205477650432
+    m_Localized: 'Taps: {0}'
+    m_Metadata:
+      m_Items:
+      - rid: 8328752321218215937
+  - m_Id: 204034809856
+    m_Localized: Press Enter
+    m_Metadata:
+      m_Items: []
+  - m_Id: 202638106624
+    m_Localized: START!
     m_Metadata:
       m_Items: []
   references:
     version: 2
     RefIds:
-    - rid: 8328752293519556859
+    - rid: 8328752321218215937
       type: {class: SmartFormatTag, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
       data:
         m_Entries: 
         m_SharedEntries:
-        - id: 6649811836928
-        - id: 19663315279872
-        - id: 24791913078784
+        - id: 207662882816
+        - id: 209399324672
+        - id: 205477650432

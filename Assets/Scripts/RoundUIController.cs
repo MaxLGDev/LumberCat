@@ -158,15 +158,15 @@ public class RoundUIController : MonoBehaviour
         return sprite;
     }
 
-    public void IncrementRoundBar()
-    {
-        progressBar.value += 1;
-    }
+    public void IncrementRoundBar() => progressBar.value += 1;
+
+    public void DecrementRoundBar() => progressBar.value = Mathf.Max(progressBar.value - 1, 0);
 
     private void OnEnable()
     {
         roundManager.OnRoundStarted += InitializeRoundUI;
         roundManager.OnRoundValidInput += IncrementRoundBar;
+        roundManager.OnRoundInvalidInput += DecrementRoundBar;
         roundManager.OnRoundEnded += ShowRoundEnd;
         roundManager.OnActiveKeysChanged += ShowAllowedKeys;
     }
@@ -175,6 +175,7 @@ public class RoundUIController : MonoBehaviour
     {
         roundManager.OnRoundStarted -= InitializeRoundUI;
         roundManager.OnRoundValidInput -= IncrementRoundBar;
+        roundManager.OnRoundInvalidInput -= DecrementRoundBar;
         roundManager.OnRoundEnded -= ShowRoundEnd;
         roundManager.OnActiveKeysChanged -= ShowAllowedKeys;
     }
@@ -195,8 +196,6 @@ public class RoundUIController : MonoBehaviour
         progressBar.maxValue = roundManager.CurrentRequiredTaps;
         progressBar.value = 0;
 
-        Debug.Log($"[DEBUG] Required taps for this round: {roundManager.CurrentRequiredTaps}");
-
         if (roundManager.CurrentMechanic != null)
             roundManager.CurrentMechanic.OnCurrentKeyChanged += ShowAllowedKeys;
     }
@@ -204,14 +203,5 @@ public class RoundUIController : MonoBehaviour
     public void Reset()
     {
         progressBar.value = 0;
-    }
-
-    private int KeyCodeToIndex(KeyCode key)
-    {
-        if (key >= KeyCode.A && key <= KeyCode.Z)
-            return key - KeyCode.A;  // 0..25
-        if (key == KeyCode.Space)
-            return 26;
-        return -1; // unsupported
     }
 }

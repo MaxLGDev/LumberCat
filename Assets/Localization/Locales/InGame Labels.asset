@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5be51871efa6c3e4eae1703925c8f5ac, type: 3}
   m_Name: InGame Labels
   m_EditorClassIdentifier: Unity.Localization.Editor::UnityEditor.Localization.StringTableCollection
-  m_SharedTableData: {fileID: 11400000, guid: 8af0ca0f26fbe594fb08e64734036188, type: 2}
+  m_SharedTableData: {fileID: 11400000, guid: 58268595e4d868b4f91efafec450b483, type: 2}
   m_Tables:
-  - {fileID: 11400000, guid: 1d352e77443e66f4dbc1330570f78b23, type: 2}
-  - {fileID: 11400000, guid: 85524a7c3a55a4d429ff3b160b0b9035, type: 2}
+  - {fileID: 11400000, guid: 1cfb7434b2cb535489ffb2e3bec0c12f, type: 2}
+  - {fileID: 11400000, guid: 1102d455899064548aea7d0a8876ee97, type: 2}
   m_Extensions: []
   m_Group: String Table
   references:

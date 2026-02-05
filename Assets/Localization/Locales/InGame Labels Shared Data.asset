@@ -13,46 +13,46 @@ MonoBehaviour:
   m_Name: InGame Labels Shared Data
   m_EditorClassIdentifier: Unity.Localization::UnityEngine.Localization.Tables.SharedTableData
   m_TableCollectionName: InGame Labels
-  m_TableCollectionNameGuidString: 8af0ca0f26fbe594fb08e64734036188
+  m_TableCollectionNameGuidString: 58268595e4d868b4f91efafec450b483
   m_Entries:
-  - m_Id: 208480772096
+  - m_Id: 47096537088
     m_Key: inGame.Countdown
     m_Metadata:
       m_Items: []
-  - m_Id: 1097375424512
+  - m_Id: 202638106624
     m_Key: inGame.startText
     m_Metadata:
       m_Items: []
-  - m_Id: 6558698971136
-    m_Key: inGame.pressEnter
+  - m_Id: 204034809856
+    m_Key: 'inGame.pressEnter
+
+'
     m_Metadata:
       m_Items: []
-  - m_Id: 6649811836928
+  - m_Id: 205477650432
     m_Key: inGame.totalTaps
     m_Metadata:
       m_Items: []
-  - m_Id: 19663315279872
+  - m_Id: 207662882816
     m_Key: inGame.roundString
     m_Metadata:
       m_Items: []
-  - m_Id: 24791913078784
-    m_Key: inGame.timerActiveString
+  - m_Id: 209399324672
+    m_Key: inGame.timer.activeString
     m_Metadata:
       m_Items: []
-  - m_Id: 29113312878592
-    m_Key: 'inGame.timerInactiveString
-
-'
+  - m_Id: 509015236608
+    m_Key: inGame.timer.inactiveString
     m_Metadata:
       m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:
-    rid: 8328752293519556824
+    rid: 8328752320438337612
   references:
     version: 2
     RefIds:
-    - rid: 8328752293519556824
+    - rid: 8328752320438337612
       type: {class: DistributedUIDGenerator, ns: UnityEngine.Localization.Tables, asm: Unity.Localization}
       data:
-        m_CustomEpoch: 1770167727155
+        m_CustomEpoch: 1770270581576
