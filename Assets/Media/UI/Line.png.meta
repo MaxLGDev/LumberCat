@@ -116,8 +116,8 @@ TextureImporter:
       name: Line_0
       rect:
         serializedVersion: 2
-        x: 4
-        y: 8
+        x: 0
+        y: 0
         width: 446
         height: 20
       alignment: 0
