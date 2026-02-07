@@ -46,6 +46,13 @@ MonoBehaviour:
     m_SerializedLabels:
     - Locale-ja-JP
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f4ff2d3f5dba4eb4c98747172b00f98b
+    m_Address: Options Table_ja-JP
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-ja-JP
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 1
   m_Settings: {fileID: 11400000, guid: 3d041112943c2bc45ba475f500f4e198, type: 2}
   m_SchemaSet:
