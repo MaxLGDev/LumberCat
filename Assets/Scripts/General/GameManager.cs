@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 enum GameState
@@ -46,6 +47,11 @@ public class GameManager : MonoBehaviour
         Instance = this;
 
         state = GameState.WaitingForStart;
+    }
+
+    private void Start()
+    {
+        SoundManager.Instance.PlayMusic("mainMenuBGM");
     }
 
     //private int invalidTaps
@@ -124,5 +130,10 @@ public class GameManager : MonoBehaviour
 
         OnGameEnded?.Invoke(won);
         Debug.Log(won ? "You won!" : "You lost!");
+    }
+
+    public void QuitGame()
+    {
+        Application.Quit();
     }
 }

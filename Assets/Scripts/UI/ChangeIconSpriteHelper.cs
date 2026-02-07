@@ -1,27 +1,28 @@
-//using UnityEngine;
-//using UnityEngine.EventSystems;
-//using UnityEngine.UI;
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
-//public class ChangeIconSpriteHelper : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
-//{
-//    private Color normalColor;
-//    [SerializeField] private Color hoverColor;
+public class ChangeIconSpriteHelper : MonoBehaviour, IPointerDownHandler
+{
+    [SerializeField] private Image muteIcon;
 
-//    private Image iconImage;
+    [SerializeField] private Sprite muted;
+    [SerializeField] private Sprite unmuted;
 
-//    private void Awake()
-//    {
-//        iconImage = GetComponent<Image>();
-//        normalColor = iconImage.color;
-//    }
+    private void Start()
+    {
+        UpdateIcon();
+    }
 
-//    public void OnPointerEnter(PointerEventData eventData)
-//    {
-//        iconImage.color = hoverColor;
-//    }
+    public void OnPointerDown(PointerEventData eventData)
+    {
+        SoundManager.Instance.ToggleMute();
+        UpdateIcon();
+    }
 
-//    public void OnPointerExit(PointerEventData eventData)
-//    {
-//        iconImage.color = normalColor;
-//    }
-//}
+    private void UpdateIcon()
+    {
+        muteIcon.sprite = SoundManager.Instance.IsMuted() ? muted : unmuted;
+    }
+    
+}

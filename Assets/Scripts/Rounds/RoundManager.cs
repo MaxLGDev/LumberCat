@@ -3,10 +3,10 @@ using UnityEngine;
 
 public enum RoundMechanic
 {
-    SingleButton,
-    AlternateButtons,
-    SplitPhase,
-    ButtonSequence,
+    SingleKey,
+    AlternateKeys,
+    SplitKeys,
+    KeySequence,
     CorrectKey
 }
 
@@ -104,7 +104,7 @@ public class RoundManager : MonoBehaviour
         float calculedTime = Mathf.Lerp(baseTime, minTime, t);
         float time = baseTime * round.timeMultiplier;
 
-        if (round.mechanic == RoundMechanic.ButtonSequence)
+        if (round.mechanic == RoundMechanic.KeySequence)
             time *= 3f;
 
         CurrentProgress = 0;
@@ -231,10 +231,10 @@ public class RoundManager : MonoBehaviour
     {
         return type switch
         {
-            RoundMechanic.SingleButton => new SingleButtonMECH(),
-            RoundMechanic.AlternateButtons => new AlternateButtonsMECH(),
-            RoundMechanic.SplitPhase => new SplitPhaseMECH(),
-            RoundMechanic.ButtonSequence => new RandomButtonsMECH(),
+            RoundMechanic.SingleKey => new SingleButtonMECH(),
+            RoundMechanic.AlternateKeys => new AlternateButtonsMECH(),
+            RoundMechanic.SplitKeys => new SplitPhaseMECH(),
+            RoundMechanic.KeySequence => new RandomButtonsMECH(),
             RoundMechanic.CorrectKey => new CorrectKeyMECH(),
             _ => throw new System.Exception("Unknown mechanic")
         };

@@ -71,4 +71,12 @@ public class HoverColorHelper : MonoBehaviour, IPointerEnterHandler, IPointerExi
         foreach (var g in targets)
             g.color = color;
     }
+
+    private void OnDisable()
+    {
+        currentColor = normalColor;
+        targetColor= normalColor;
+        SetColors(normalColor);
+        isHovered = false;
+    }
 }
