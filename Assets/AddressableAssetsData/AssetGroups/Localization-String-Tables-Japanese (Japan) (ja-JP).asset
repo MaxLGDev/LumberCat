@@ -22,8 +22,20 @@ MonoBehaviour:
     - Locale-ja-JP
     - Preload
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3d64b11c1384c174a9e5bb4176163181
+    m_Address: Pause Panel_ja-JP
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-ja-JP
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 3f7fc11bf96e445498f32c6ed57f8825
     m_Address: Final Screen Table_ja-JP
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-ja-JP
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7304be01dea0fb241a7b33bce389b989
+    m_Address: Main Menu Table_ja-JP
     m_ReadOnly: 1
     m_SerializedLabels:
     - Locale-ja-JP

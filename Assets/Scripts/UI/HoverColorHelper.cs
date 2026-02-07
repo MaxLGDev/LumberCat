@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -15,27 +16,15 @@ public class HoverColorHelper : MonoBehaviour, IPointerEnterHandler, IPointerExi
     private Color targetColor;
     private bool isHovered;
 
+    [SerializeField] private bool includeParent = true;
+
     private void Awake()
     {
-        var allGraphics = GetComponentsInChildren<Graphic>(false);
-        var rootGraphic = GetComponent<Graphic>();
-
-        var list = new List<Graphic>();
-        foreach (var g in allGraphics)
-        {
-            if (g != rootGraphic)
-                list.Add(g);
-        }
-
-        targets = list.ToArray();
-
-        if (targets == null || targets.Length == 0)
-        {
-            // No explicit targets → this is a simple button
-            var selfGraphic = GetComponent<Graphic>();
-            if (selfGraphic != null)
-                targets = new[] { selfGraphic };
-        }
+        var allGraphics = GetComponentsInChildren<Graphic>(true);
+        if (includeParent)
+            targets = allGraphics;
+        else
+            targets = Array.FindAll(allGraphics, g => g != GetComponent<Graphic>());
 
         currentColor = normalColor;
         targetColor = normalColor;
