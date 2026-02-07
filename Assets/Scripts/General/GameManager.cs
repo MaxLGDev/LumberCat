@@ -59,6 +59,7 @@ public class GameManager : MonoBehaviour
         state = GameState.InGame;
 
         OnRoundStarted?.Invoke(true);
+        PanelManager.Instance.ShowInGame();
         StartNextRound();
     }
 
@@ -85,13 +86,14 @@ public class GameManager : MonoBehaviour
     private void HandleRoundValidInput()
     {
         totalTaps++;
-        totalTaps = Mathf.Max(totalTaps, 999);
+        totalTaps = Mathf.Min(totalTaps, 999);
         OnTotalTapsChanged?.Invoke(totalTaps);
     }
+
     private void HandleRoundInvalidInput()
     {
         totalTaps++;
-        totalTaps = Mathf.Max(totalTaps, 999);
+        totalTaps = Mathf.Min(totalTaps, 999);
         OnTotalTapsChanged?.Invoke(totalTaps);
     }
 

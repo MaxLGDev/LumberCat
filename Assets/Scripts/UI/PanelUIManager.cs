@@ -56,7 +56,9 @@ public class PanelManager : MonoBehaviour
         if (mainMenuPanel == null)
             throw new MissingReferenceException("Main Menu Panel is missing!");
 
+
         HideAll();
+        Debug.Log("ShowMainMenu called!");
         mainMenuPanel.SetActive(true);
     }
 

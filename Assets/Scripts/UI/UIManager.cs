@@ -5,6 +5,8 @@ using UnityEngine.Localization;
 
 public class UIManager : MonoBehaviour
 {
+    public static UIManager Instance;
+
     [SerializeField] private InputReader inputReader;
 
     [Header("Links")]
@@ -23,9 +25,25 @@ public class UIManager : MonoBehaviour
     [SerializeField] private LocalizedString roundString;
     [SerializeField] private LocalizedString tapsString;
 
+    [Header("Web Links")]
+    [SerializeField] private string unityroomUrl = "https://unityroom.com/users/maxlgdev";
+    [SerializeField] private string githubUrl = "https://github.com/MaxLGDev";
+
     private bool waitingForEnter = false;
     private GameManager gm;
     private Coroutine countdownCo;
+
+    private void Awake()
+    {
+        if(Instance != null)
+        {
+            Debug.Log("Only one UI Manager can exist!");
+            Destroy(gameObject);
+            return;
+        }
+
+        Instance = this;
+    }
 
     private void Start()
     {
@@ -38,7 +56,7 @@ public class UIManager : MonoBehaviour
         totalTaps.text = tapsString.GetLocalizedString();
 
         gm = FindFirstObjectByType<GameManager>();
-        gm?.StartGame();
+        PanelManager.Instance.ShowMainMenu();
     }
 
     private void OnEnable()
@@ -127,5 +145,17 @@ public class UIManager : MonoBehaviour
             waitingForEnter = false;
             countdownCo = StartCoroutine(CountdownCO());
         }
+    }
+
+    public void OpenUnityroomLink()
+    {
+        if(!string.IsNullOrEmpty(unityroomUrl))
+            Application.OpenURL(unityroomUrl);
+    }
+
+    public void OpenGithubLink()
+    {
+        if(!string.IsNullOrEmpty(githubUrl))
+            Application.OpenURL(githubUrl);
     }
 }
