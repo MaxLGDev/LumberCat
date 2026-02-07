@@ -58,7 +58,6 @@ public class PanelManager : MonoBehaviour
 
 
         HideAll();
-        Debug.Log("ShowMainMenu called!");
         mainMenuPanel.SetActive(true);
     }
 
@@ -76,7 +75,6 @@ public class PanelManager : MonoBehaviour
         if (rulesPanel == null)
             throw new MissingReferenceException("Rules Panel Panel is missing!");
 
-        HideAll();
         rulesPanel.SetActive(true);
     }
 
