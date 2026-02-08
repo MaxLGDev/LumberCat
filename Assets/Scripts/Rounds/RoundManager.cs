@@ -193,6 +193,21 @@ public class RoundManager : MonoBehaviour
         }
     }
 
+    public void ResetCurrentRound()
+    {
+        isActive = false;
+        tickable = null;
+
+        inputController.EnableInput(false);
+        inputController.Unbind();
+
+        if(currentMechanic != null)
+        {
+            UnhookMechanic(currentMechanic);
+            currentMechanic = null;
+        }
+    }
+
     private void HandleValidInput()
     {
         if (!isActive) return;

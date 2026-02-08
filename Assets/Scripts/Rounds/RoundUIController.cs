@@ -200,6 +200,11 @@ public class RoundUIController : MonoBehaviour
             Debug.Log("unlucky");
     }
 
+    public void ResetTimerUI()
+    {
+        timerDuration.text = timerInactiveText;
+    }
+
     private void InitializeRoundUI()
     {
         lastKeys = null;

@@ -41,12 +41,31 @@ public class PanelManager : MonoBehaviour
         Instance = this;
     }
 
+    private void Start()
+    {
+        if (GameManager.Instance != null)
+            GameManager.Instance.OnGamePaused += HandleGamePaused;
+        else
+            Debug.LogError("GameManager.Instance is null in PanelManager.Start()");
+    }
+
     public void ShowFinalTaps()
     {
         int totalTaps = GameManager.Instance.TotalTaps;
 
         tapsString.Arguments = new object[] { totalTaps };
         finalTapsText.text = tapsString.GetLocalizedString();
+    }
+
+    private void OnDisable()
+    {
+        if (GameManager.Instance != null)
+            GameManager.Instance.OnGamePaused -= HandleGamePaused;
+    }
+
+    private void HandleGamePaused(bool isPaused)
+    {
+        ShowPause(isPaused);
     }
 
     #region "Toggle Panels"
@@ -82,6 +101,8 @@ public class PanelManager : MonoBehaviour
     {
         if (pausePanel == null)
             throw new MissingReferenceException("Pause Panel is missing!");
+
+        Debug.Log("ShowPause called with: " + show);
 
         pausePanel.SetActive(show);
     }
@@ -129,12 +150,5 @@ public class PanelManager : MonoBehaviour
         optionsPanel.SetActive(false);
     }
 
-    #endregion
-
-    #region Buttons
-
-    #endregion
-
-    #region Localization
     #endregion
 }

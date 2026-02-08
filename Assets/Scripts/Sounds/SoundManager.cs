@@ -103,6 +103,24 @@ public class SoundManager : MonoBehaviour
         PlaySound(musicSounds, musicSource, name);
     }
 
+    public void PauseAll()
+    {
+        if (musicSource.isPlaying)
+            musicSource.Pause();
+
+        if(sfxSource.isPlaying)
+            sfxSource.Pause();
+    }
+
+    public void ResumeAll()
+    {
+        if (!musicSource.isPlaying && musicSource.clip != null)
+            musicSource.UnPause();
+
+        if (!sfxSource.isPlaying && sfxSource.clip != null)
+            sfxSource.UnPause();
+    }
+
     // ���ʉ��Đ��i�s�b�`�w��j
     public void PlaySFX(string name, float pitch = 1f)
     {
