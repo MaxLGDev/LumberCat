@@ -22,6 +22,121 @@ MonoBehaviour:
     m_Localized: HOW TO PLAY
     m_Metadata:
       m_Items: []
+  - m_Id: 5791031296
+    m_Localized: GENERAL INFORMATIONS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7703633920
+    m_Localized: SINGLE KEY
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8894816256
+    m_Localized: SPLIT KEYS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12036349952
+    m_Localized: CORRECT KEY
+    m_Metadata:
+      m_Items: []
+  - m_Id: 307325183131648
+    m_Localized: KEY SEQUENCE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 307328177864704
+    m_Localized: ALTERNATE KEYS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 309157754241024
+    m_Localized: '- The lower the total amount of taps, the better it is.
+
+
+      -
+      There are 5 rounds in total. Each round will have a random mechanic. It means
+      that every new game will have a different order of mechanics.
+
+
+      - To
+      win a round, you need to completely fill the progress bar at the bottom.
+
+
+      -
+      Have fun and try to have the best possible score!'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 309362637602816
+    m_Localized: Green = press this key.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 309394317180928
+    m_Localized: Red = don't press this key.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 311305372106752
+    m_Localized: '- Press the highlighted key repeatedly.
+
+
+      - Finding a tapping
+      rhythm is better than smashing the key.
+
+
+      - Pressing a wrong key will
+      reduce the bar. Be careful!'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 311380122992640
+    m_Localized: '- Press the first green key up to 50% of the bar. Then press the
+      other key until 100%.
+
+
+      - You only have to focus at around 50%. Otherwise,
+      just go wild on the key.
+
+
+      - Going under 45% will go back to the first
+      key. Be careful!'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 313129156149248
+    m_Localized: '- At random intervals, a new green key will be chosen. Press the
+      correct key until the bar is filled.
+
+
+      - Slowly but surely is the good
+      strategy for this one, as spamming too much can make you lose a lot of progress.
+
+
+      -
+      Be careful of the key you''re pressing! The change can be very fast!'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 314543043444736
+    m_Localized: '- When you press the green key, the red key becomes the green key.
+      Only one tap per key is required.
+
+
+      - Keep an eye on the next key to
+      prepare yourself. Focusing on the green key in this case could be fatal.
+
+
+      -
+      Take this one slowly! It''s all about managing the current key while thinking
+      about the next.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 315658363404288
+    m_Localized: '- Every time you tap the correct key, the other key becomes the
+      green one. Alternate between the two keys until you fill the bar.
+
+
+      -
+      Keep the rhythm in mind. If you lose it, you could lose a lot of progress until
+      you find back the correct rhythm.
+
+
+      - Don''t try to go too fast! A good
+      alternating rhythm is more important.'
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []
