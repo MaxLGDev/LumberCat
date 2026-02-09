@@ -1,16 +1,11 @@
-using UnityEngine;
-using TMPro;
 using System.Collections;
+using TMPro;
+using UnityEngine;
 using UnityEngine.Localization;
 
 public class UIManager : MonoBehaviour
 {
     public static UIManager Instance;
-
-    [SerializeField] private InputReader inputReader;
-
-    [Header("Links")]
-    [SerializeField] private RoundManager roundManager;
 
     [Header("Game UI Elements")]
     [SerializeField] private TMP_Text currentRound;
@@ -29,13 +24,13 @@ public class UIManager : MonoBehaviour
     [SerializeField] private string unityroomUrl = "https://unityroom.com/users/maxlgdev";
     [SerializeField] private string githubUrl = "https://github.com/MaxLGDev";
 
-    private bool waitingForEnter = false;
+    private bool enterPressed;
+
     private GameManager gm;
-    private Coroutine countdownCo;
 
     private void Awake()
     {
-        if(Instance != null)
+        if (Instance != null)
         {
             Debug.Log("Only one UI Manager can exist!");
             Destroy(gameObject);
@@ -43,37 +38,47 @@ public class UIManager : MonoBehaviour
         }
 
         Instance = this;
+
+        gm = GameManager.Instance;
+
+        roundString.StringChanged += value =>
+        {
+            currentRound.text = value;
+        };
+
+        // TAPS TEXT
+        tapsString.StringChanged += value =>
+        {
+            totalTaps.text = value;
+        };
     }
 
     private void Start()
     {
         keySlots.SetActive(false);
-        
-        roundString.Arguments = new object[] { "-" };
-        currentRound.text = roundString.GetLocalizedString();
 
-        tapsString.Arguments = new object[] { "-" };
-        totalTaps.text = tapsString.GetLocalizedString();
-
-        gm = FindFirstObjectByType<GameManager>();
         PanelManager.Instance.ShowMainMenu();
+    }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Return))
+            enterPressed = true;
     }
 
     private void OnEnable()
     {
-        gm = FindFirstObjectByType<GameManager>();
+        if (gm == null)
+            return;
 
-        if (gm != null)
-        {
-            gm.OnTotalTapsChanged += UpdateTotalTaps;
-            gm.OnGameEnded += HandleGameEnded;
-        }
+        gm.OnTotalTapsChanged += UpdateTotalTaps;
+        gm.OnGameEnded += HandleGameEnded;
+        gm.OnGameStateChanged += HandleGameStateChanged;
+        gm.OnRoundChanged += UpdateRoundNumber;
 
-        if (roundManager != null)
-            roundManager.OnRoundStarted += OnRoundStarted;
-
-        if (inputReader != null)
-            inputReader.OnKeyPressed += HandleKeyPressed;
+        HandleGameStateChanged(gm.CurrentState);
+        UpdateRoundNumber();
+        UpdateTotalTaps(gm.TotalTaps);
     }
 
     private void OnDisable()
@@ -82,53 +87,65 @@ public class UIManager : MonoBehaviour
         {
             gm.OnTotalTapsChanged -= UpdateTotalTaps;
             gm.OnGameEnded -= HandleGameEnded;
+            gm.OnGameStateChanged -= HandleGameStateChanged;
+            gm.OnRoundChanged -= UpdateRoundNumber;
         }
-
-        if (roundManager != null)
-            roundManager.OnRoundStarted -= OnRoundStarted;
-
-        if (inputReader != null)
-            inputReader.OnKeyPressed -= HandleKeyPressed;
     }
 
-    private void OnRoundStarted()
+    private void HandleGameStateChanged(GameState state)
     {
-        PanelManager.Instance.ShowRoundTransition(true);
-
-        roundString.Arguments = new object[] { gm.CurrentRound };
-        currentRound.text = roundString.GetLocalizedString();
-
-        waitingForEnter = true;
-        countdown.text = pressedEnterString.GetLocalizedString();
-
-        if (countdownCo != null)
+        switch (state)
         {
-            StopCoroutine(countdownCo);
-            countdownCo = null;
+            case GameState.RoundTransition:
+                PanelManager.Instance.ShowRoundTransition(true);
+                keySlots.SetActive(false);
+                UpdateRoundNumber();
+                UpdateTotalTaps(gm.TotalTaps);
+                break;
+
+            case GameState.InGame:
+                PanelManager.Instance.ShowRoundTransition(false);
+                keySlots.SetActive(true);
+                break;
+
+            case GameState.GameWon:
+            case GameState.GameOver:
+                keySlots.SetActive(false);
+                break;
         }
     }
 
-    private void UpdateTotalTaps(int taps)
+    public IEnumerator RunCountdown()
     {
-        tapsString.Arguments = new object[] { taps };
-        totalTaps.text = tapsString.GetLocalizedString();
-    }
+        enterPressed = false;
 
-    private IEnumerator CountdownCO()
-    {
+        countdown.gameObject.SetActive(true);
+        countdown.text = pressedEnterString.GetLocalizedString();
+        yield return new WaitUntil(() => enterPressed);
+
         for (int i = 3; i > 0; i--)
         {
             countdownString.Arguments = new object[] { i };
             countdown.text = countdownString.GetLocalizedString();
-            yield return new WaitForSeconds(1);
+            yield return new WaitForSeconds(1f);
         }
 
         countdown.text = startString.GetLocalizedString();
         yield return new WaitForSeconds(0.5f);
 
-        PanelManager.Instance.ShowRoundTransition(false);
-        keySlots.SetActive(true);
-        roundManager.StartPreparedRound();
+        countdown.gameObject.SetActive(false);
+    }
+
+    private void UpdateRoundNumber()
+    {
+        roundString.Arguments = new object[] { gm.CurrentRound };
+        roundString.RefreshString();
+    }
+
+    private void UpdateTotalTaps(int taps)
+    {
+        tapsString.Arguments = new object[] { taps };
+        tapsString.RefreshString();
     }
 
     private void HandleGameEnded(bool won)
@@ -138,24 +155,15 @@ public class UIManager : MonoBehaviour
         PanelManager.Instance.ShowFinalTaps();
     }
 
-    private void HandleKeyPressed(KeyCode key)
-    {
-        if (waitingForEnter && key == KeyCode.Return)
-        {
-            waitingForEnter = false;
-            countdownCo = StartCoroutine(CountdownCO());
-        }
-    }
-
     public void OpenUnityroomLink()
     {
-        if(!string.IsNullOrEmpty(unityroomUrl))
+        if (!string.IsNullOrEmpty(unityroomUrl))
             Application.OpenURL(unityroomUrl);
     }
 
     public void OpenGithubLink()
     {
-        if(!string.IsNullOrEmpty(githubUrl))
+        if (!string.IsNullOrEmpty(githubUrl))
             Application.OpenURL(githubUrl);
     }
 }

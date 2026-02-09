@@ -30,6 +30,7 @@ public class RoundUIController : MonoBehaviour
     [SerializeField] private Slider progressBar;
     [SerializeField] private TMP_Text timerDuration;
     [SerializeField] private TMP_Text mechanicName;
+    [SerializeField] private LocalizedString mechanicNameLocalized;
 
     [SerializeField] private LocalizedString timerInactiveString;
     [SerializeField] private LocalizedString timerActiveString;
@@ -58,8 +59,20 @@ public class RoundUIController : MonoBehaviour
             timerActiveFormat = value;
         };
 
+        mechanicNameLocalized.StringChanged += value =>
+        {
+            mechanicName.text = value;
+        };
+
         timerInactiveString.RefreshString();
         timerActiveString.RefreshString();
+
+        if (roundManager == null)
+        {
+            Debug.LogError("RoundUIController: RoundManager not assigned", this);
+            enabled = false;
+            return;
+        }
 
         // -- Build dictionary map --
         keySpriteMap = new Dictionary<KeyCode, Sprite>();
@@ -99,13 +112,15 @@ public class RoundUIController : MonoBehaviour
 
     private void ShowAllowedKeys(KeyCode[] keys)
     {
-        if (keySlots == null || keySlots.Length == 0) return;
+        if (keySlots == null || keySlots.Length == 0)
+            return;
+
+        if (keys == null || keys.Length == 0)
+            return;
 
         lastKeys = keys;
 
         int slotCount = keySlots.Length;
-
-        if (keys == null || keys.Length == 0) return;
 
         // Clear all slots
         for (int i = 0; i < slotCount; i++)
@@ -153,6 +168,11 @@ public class RoundUIController : MonoBehaviour
         }
     }
 
+    public void SetCountdownRaw(string text)
+    {
+        timerDuration.text = text;
+    }
+
     // Map KeyCode to your sprites safely
     private Sprite GetSpriteForKey(KeyCode key)
     {
@@ -173,14 +193,14 @@ public class RoundUIController : MonoBehaviour
 
     private void OnEnable()
     {
-        roundManager.OnRoundStarted += InitializeRoundUI;
+        roundManager.OnRoundPrepared += InitializeRoundUI;
         roundManager.OnRoundEnded += ShowRoundEnd;
         roundManager.OnActiveKeysChanged += ShowAllowedKeys;
     }
 
     private void OnDisable()
     {
-        roundManager.OnRoundStarted -= InitializeRoundUI;
+        roundManager.OnRoundPrepared -= InitializeRoundUI;
         roundManager.OnRoundEnded -= ShowRoundEnd;
         roundManager.OnActiveKeysChanged -= ShowAllowedKeys;
 
@@ -215,7 +235,8 @@ public class RoundUIController : MonoBehaviour
             lastMechanic.OnCurrentKeyChanged -= ShowAllowedKeys;
         }
 
-        mechanicName.text = roundManager.CurrentMechanicType.ToString();
+        LocalizeMechanicName();
+
         progressBar.minValue = 0;
         progressBar.maxValue = roundManager.CurrentRequiredTaps;
         progressBar.value = 0;
@@ -226,6 +247,13 @@ public class RoundUIController : MonoBehaviour
             lastMechanic = roundManager.CurrentMechanic;
             roundManager.CurrentMechanic.OnCurrentKeyChanged += ShowAllowedKeys;
         }
+    }
+
+    private void LocalizeMechanicName()
+    {
+        mechanicNameLocalized.TableReference = "MechanicsTable";
+        mechanicNameLocalized.TableEntryReference = "mech." + roundManager.CurrentMechanicType.ToString();
+        mechanicNameLocalized.RefreshString();
     }
 
     public void Reset()

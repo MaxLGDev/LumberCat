@@ -33,11 +33,11 @@ public class RoundDefinition
 
 public class RoundManager : MonoBehaviour
 {
-    public event Action OnRoundStarted;
     public event Action OnRoundValidInput;
     public event Action OnRoundInvalidInput;
     public event Action<bool> OnRoundEnded;
     public event Action<KeyCode[]> OnActiveKeysChanged;
+    public event Action OnRoundPrepared;
     private Action<KeyCode[]> currentKeyChangedHandler;
 
     private IRoundMechanic currentMechanic;
@@ -107,6 +107,15 @@ public class RoundManager : MonoBehaviour
         if (round.mechanic == RoundMechanic.KeySequence)
             time *= 3f;
 
+        if (round.mechanic == RoundMechanic.SingleKey)
+            time /= 2f;
+
+        if (round.mechanic == RoundMechanic.AlternateKeys)
+            time /= 2f;
+
+        if (round.mechanic == RoundMechanic.SplitKeys)
+            time /= 2f;
+
         CurrentProgress = 0;
         CurrentRequiredTaps = baseTapsPerRound;
 
@@ -131,10 +140,9 @@ public class RoundManager : MonoBehaviour
         inputController.Bind(currentMechanic.HandleKey);
         inputController.EnableInput(false);
 
-        // Fire OnRoundStarted BEFORE StartRound so UI can subscribe first!
-        OnRoundStarted?.Invoke();
-
         currentMechanic.StartRound(round.allowedKeys);
+
+        OnRoundPrepared?.Invoke();
     }
 
     public void StartPreparedRound ()
@@ -212,6 +220,12 @@ public class RoundManager : MonoBehaviour
     {
         if (!isActive) return;
 
+        if (GameManager.Instance.CurrentState != GameState.InGame)
+            return;
+
+        if (GameManager.Instance.IsPaused)
+            return;
+
         CurrentProgress++;
 
         if (currentMechanic is IProgressAware progressAware)
@@ -228,6 +242,12 @@ public class RoundManager : MonoBehaviour
     private void HandleInvalidInput()
     {
         if (!isActive) return;
+
+        if (GameManager.Instance.CurrentState != GameState.InGame)
+            return;
+
+        if (GameManager.Instance.IsPaused)
+            return;
 
         CurrentProgress = Mathf.Max(0, CurrentProgress - 1);
 

@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: MechanicsTable_en-US
+  m_EditorClassIdentifier: Unity.Localization::UnityEngine.Localization.Tables.StringTable
+  m_LocaleId:
+    m_Code: en-US
+  m_SharedData: {fileID: 11400000, guid: 9374222dbe2c28346a3e30dc41e16a0f, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 5275131904
+    m_Localized: SingleKey
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8609603584
+    m_Localized: SplitKeys
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10098581504
+    m_Localized: CorrectKey
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11763720192
+    m_Localized: KeySequence
+    m_Metadata:
+      m_Items: []
+  - m_Id: 13424664576
+    m_Localized: AlternateKeys
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []

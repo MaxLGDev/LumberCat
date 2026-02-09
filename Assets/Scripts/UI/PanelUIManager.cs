@@ -75,6 +75,7 @@ public class PanelManager : MonoBehaviour
         if (mainMenuPanel == null)
             throw new MissingReferenceException("Main Menu Panel is missing!");
 
+        GameManager.Instance.ReturnToMainMenu();
 
         HideAll();
         mainMenuPanel.SetActive(true);
