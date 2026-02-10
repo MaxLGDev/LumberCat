@@ -45,21 +45,8 @@ public class SoundManager : MonoBehaviour
         float music = PlayerPrefs.GetFloat(MUSIC_PREF, 0.5f);
         float sfx = PlayerPrefs.GetFloat(SFX_PREF, 0.5f);
 
-        Debug.Log($"[INIT] Music pref: {music}, SFX pref: {sfx}");
         SetMusicVolume(music);
         SetSFXVolume(sfx);
-
-        DebugMixerValue(MUSIC_VOLUME);
-        DebugMixerValue(SFX_VOLUME);
-        DebugMixerValue(MASTER_VOLUME);
-    }
-
-    private void DebugMixerValue(string param)
-    {
-        if (mixer.GetFloat(param, out float value))
-            Debug.Log($"[MIXER] {param} = {value} dB");
-        else
-            Debug.LogError($"[MIXER] PARAM NOT FOUND: {param}");
     }
 
     // �T�E���h�������Đ��̋��ʏ���
@@ -162,7 +149,6 @@ public class SoundManager : MonoBehaviour
 
     public void SetSFXVolume(float value)
     {
-        Debug.Log($"[CALL] SetSFXVolume({value})");
         SetVolume(SFX_VOLUME, value);
         PlayerPrefs.SetFloat(SFX_PREF, value);
     }

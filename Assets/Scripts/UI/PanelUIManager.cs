@@ -8,7 +8,8 @@ public class PanelManager : MonoBehaviour
 
     [Header("Main Menu")]
     [SerializeField] private GameObject mainMenuPanel;
-    [SerializeField] private GameObject rulesPanel;
+    [SerializeField] private GameObject tutorialPanel;
+    [SerializeField] private TutorialUI tutorialUI;
 
     [Header("In-Game")]
     [SerializeField] private GameObject inGamePanel;
@@ -25,6 +26,7 @@ public class PanelManager : MonoBehaviour
 
     [Header("Options")]
     [SerializeField] private GameObject optionsPanel;
+    [SerializeField] private OptionsUI optionsUI;
 
     [Header("Localization")]
     [SerializeField] private LocalizedString tapsString;
@@ -77,6 +79,8 @@ public class PanelManager : MonoBehaviour
 
         GameManager.Instance.ReturnToMainMenu();
 
+        SoundManager.Instance.PlayMusic("mainMenuBGM");
+
         HideAll();
         mainMenuPanel.SetActive(true);
     }
@@ -90,20 +94,23 @@ public class PanelManager : MonoBehaviour
         inGamePanel.SetActive(true);
     }
 
-    public void ShowRules()
+    public void ShowTutorial(bool show)
     {
-        if (rulesPanel == null)
+        if (tutorialPanel == null)
             throw new MissingReferenceException("Rules Panel Panel is missing!");
 
-        rulesPanel.SetActive(true);
+        tutorialPanel.SetActive(true);
+
+        if (show)
+            tutorialUI.ShowFade();
+        else
+            tutorialUI.HideFade();
     }
 
     public void ShowPause(bool show)
     {
         if (pausePanel == null)
             throw new MissingReferenceException("Pause Panel is missing!");
-
-        Debug.Log("ShowPause called with: " + show);
 
         pausePanel.SetActive(show);
     }
@@ -122,26 +129,32 @@ public class PanelManager : MonoBehaviour
             throw new MissingReferenceException("Final Screen Panel is missing!");
 
         HideAll();
+        finalScreenPanel.SetActive(true);
+
         if (won)
             victoryText.SetActive(true);
         else
             defeatText.SetActive(true);
 
-        finalScreenPanel.SetActive(true);
     }
 
-    public void ShowOptions()
+    public void ShowOptions(bool show)
     {
         if (optionsPanel == null)
             throw new MissingReferenceException("Options Panel is missing!");
 
         optionsPanel.SetActive(true);
+
+        if(show)
+            optionsUI.ShowFade();
+        else
+            optionsUI.HideFade();
     }
 
     public void HideAll()
     {
         mainMenuPanel.SetActive(false);
-        rulesPanel.SetActive(false);
+        tutorialPanel.SetActive(false);
         roundTransitionPanel.SetActive(false);
         pausePanel.SetActive(false);
         victoryText.SetActive(false);

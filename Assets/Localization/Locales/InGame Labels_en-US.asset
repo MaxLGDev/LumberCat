@@ -50,6 +50,19 @@ MonoBehaviour:
     m_Localized: START!
     m_Metadata:
       m_Items: []
+  - m_Id: 1526719461466112
+    m_Localized: ROUND {0} / 5 CLEAR
+    m_Metadata:
+      m_Items:
+      - rid: 8328752321218215937
+  - m_Id: 1876093831151616
+    m_Localized: Prepare your fingers...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1876995270967296
+    m_Localized: ARE YOU READY?
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds:
@@ -61,3 +74,4 @@ MonoBehaviour:
         - id: 207662882816
         - id: 209399324672
         - id: 205477650432
+        - id: 1526719461466112

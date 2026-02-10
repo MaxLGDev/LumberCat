@@ -46,7 +46,15 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 1526719461466112
-    m_Key: New Entry
+    m_Key: inGame.clearedRound
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1876995270967296
+    m_Key: inGame.firstRound
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1876093831151616
+    m_Key: inGame.firstCompliment
     m_Metadata:
       m_Items: []
   m_Metadata:

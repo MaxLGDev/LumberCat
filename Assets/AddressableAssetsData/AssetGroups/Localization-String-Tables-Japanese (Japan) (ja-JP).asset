@@ -57,6 +57,12 @@ MonoBehaviour:
     - Locale-ja-JP
     - Preload
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e2a6c08935ddd3641bb66ba1e3c32b5f
+    m_Address: Compliments Table_ja-JP
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-ja-JP
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: e8f4316ffe8a6c647a39028dbb5e5b0e
     m_Address: Tutorial Panel_ja-JP
     m_ReadOnly: 1

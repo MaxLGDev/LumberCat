@@ -12,6 +12,8 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TMP_Text totalTaps;
     [SerializeField] private TMP_Text countdown;
     [SerializeField] private GameObject keySlots;
+    [SerializeField] private TMP_Text roundClearedText;
+    [SerializeField] private TMP_Text complimentText;
 
     [Header("Localization - In Game")]
     [SerializeField] private LocalizedString pressedEnterString;
@@ -19,6 +21,10 @@ public class UIManager : MonoBehaviour
     [SerializeField] private LocalizedString startString;
     [SerializeField] private LocalizedString roundString;
     [SerializeField] private LocalizedString tapsString;
+    [SerializeField] private LocalizedString firstRoundString;
+    [SerializeField] private LocalizedString warmUpString;
+    [SerializeField] private LocalizedString roundClearedString;
+    [SerializeField] private LocalizedString[] complimentStrings;
 
     [Header("Web Links")]
     [SerializeField] private string unityroomUrl = "https://unityroom.com/users/maxlgdev";
@@ -62,7 +68,7 @@ public class UIManager : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Return))
+        if (Input.GetKeyDown(KeyCode.Return) && gm.CurrentState == GameState.RoundTransition)
             enterPressed = true;
     }
 
@@ -99,6 +105,7 @@ public class UIManager : MonoBehaviour
             case GameState.RoundTransition:
                 PanelManager.Instance.ShowRoundTransition(true);
                 keySlots.SetActive(false);
+                ShowRoundCleared();
                 UpdateRoundNumber();
                 UpdateTotalTaps(gm.TotalTaps);
                 break;
@@ -119,6 +126,8 @@ public class UIManager : MonoBehaviour
     {
         enterPressed = false;
 
+        roundClearedText.gameObject.SetActive(true);
+        complimentText.gameObject.SetActive(true);
         countdown.gameObject.SetActive(true);
         countdown.text = pressedEnterString.GetLocalizedString();
         yield return new WaitUntil(() => enterPressed);
@@ -133,7 +142,30 @@ public class UIManager : MonoBehaviour
         countdown.text = startString.GetLocalizedString();
         yield return new WaitForSeconds(0.5f);
 
-        countdown.gameObject.SetActive(false);
+        complimentText.gameObject.SetActive(false);
+    }
+
+    public void ShowRoundCleared()
+    {
+        int round = gm.CurrentRound;
+
+        if (round == 1)
+        {
+            roundClearedText.text = firstRoundString.GetLocalizedString();
+            complimentText.text = warmUpString.GetLocalizedString();
+        }
+        else
+        {
+            int clearedRound = round - 1;
+            roundClearedString.Arguments = new object[] { clearedRound };
+            roundClearedText.text = roundClearedString.GetLocalizedString();
+
+            int index = Random.Range(0, complimentStrings.Length);
+            complimentText.text = complimentStrings[index].GetLocalizedString();
+        }
+
+        roundClearedText.gameObject.SetActive(true);
+        complimentText.gameObject.SetActive(true);
     }
 
     private void UpdateRoundNumber()

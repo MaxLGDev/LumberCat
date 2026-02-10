@@ -1,0 +1,103 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: Compliments Table_en-US
+  m_EditorClassIdentifier: Unity.Localization::UnityEngine.Localization.Tables.StringTable
+  m_LocaleId:
+    m_Code: en-US
+  m_SharedData: {fileID: 11400000, guid: a7d287dc3f5118a4594666509648a099, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 30511398912
+    m_Localized: Wait, my keyboard can't do that!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 32369475584
+    m_Localized: Did I just witness that?
+    m_Metadata:
+      m_Items: []
+  - m_Id: 35653615616
+    m_Localized: Okay, show-off.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 36916101120
+    m_Localized: My keys are melting!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40045051904
+    m_Localized: Since when were you this good?
+    m_Metadata:
+      m_Items: []
+  - m_Id: 42607771648
+    m_Localized: Wow, chill out speedrunner.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 46193901568
+    m_Localized: Okay okay, we get it, you're fast.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 47649325056
+    m_Localized: Trying to break a world record?
+    m_Metadata:
+      m_Items: []
+  - m_Id: 49318658048
+    m_Localized: Someone's in a hurry.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 687448457216
+    m_Localized: Slow down, this isn't a race... wait.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 689201676288
+    m_Localized: You really want my game to end...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 689977622528
+    m_Localized: Fine, have it your way.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 690761957376
+    m_Localized: Alright alright, next round.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 691554680832
+    m_Localized: Someone's got places to be.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 692263518208
+    m_Localized: Was that even legal?
+    m_Metadata:
+      m_Items: []
+  - m_Id: 693005910016
+    m_Localized: Now we're talking!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 693752496128
+    m_Localized: Keep that energy up!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 818952470528
+    m_Localized: Unstoppable!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 820475002880
+    m_Localized: That's the tempo!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 821217394688
+    m_Localized: Perfect rhythm!
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []

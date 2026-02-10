@@ -57,6 +57,12 @@ MonoBehaviour:
     - Locale-en-US
     - Preload
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 96a01eb7e7636d0479bdbf052df9a955
+    m_Address: Compliments Table_en-US
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-en-US
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: af920e311ff54e5498edb8707e7e8327
     m_Address: Tutorial Panel_en-US
     m_ReadOnly: 1
