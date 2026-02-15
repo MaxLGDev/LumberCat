@@ -1,5 +1,5 @@
-using System.Collections;
 using UnityEngine;
+using System.Collections;
 
 [RequireComponent(typeof(CanvasGroup))]
 public class UIFade : MonoBehaviour
@@ -42,7 +42,7 @@ public class UIFade : MonoBehaviour
 
         while(t < duration)
         {
-            t += Time.unscaledDeltaTime;
+            t += Time.deltaTime;
             cg.alpha = Mathf.Lerp(start, target, t / duration);
             yield return null;
         }
@@ -51,4 +51,5 @@ public class UIFade : MonoBehaviour
         cg.blocksRaycasts = interactable;
         cg.interactable = interactable;
     }
+
 }

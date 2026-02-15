@@ -213,6 +213,11 @@ public class RoundUIController : MonoBehaviour
         timerDuration.text = timerInactiveText;
 
         ShowAllowedKeys(Array.Empty<KeyCode>());
+
+        if (won)
+            Debug.Log("gg");
+        else
+            Debug.Log("unlucky");
     }
 
     public void ResetTimerUI()

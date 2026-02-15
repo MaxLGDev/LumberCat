@@ -1,5 +1,5 @@
-using System.Collections;
 using UnityEngine;
+using System.Collections;
 
 public class ButtonZOOM : MonoBehaviour
 {
@@ -10,7 +10,7 @@ public class ButtonZOOM : MonoBehaviour
         StartCoroutine(ZoomCoroutine(duration, targetScale));
     }
 
-    private IEnumerator ZoomCoroutine(float duration, float targetScale)
+    private IEnumerator ZoomCoroutine(float duration, float targetSCale)
     {
         Vector3 originalScale = transform.localScale;
         Vector3 finalScale = originalScale * targetScale;
@@ -21,7 +21,6 @@ public class ButtonZOOM : MonoBehaviour
             t += Time.unscaledDeltaTime;
             transform.localScale = Vector3.Lerp(originalScale, finalScale, t);
             yield return null;
-            
         }
 
         transform.localScale = originalScale;

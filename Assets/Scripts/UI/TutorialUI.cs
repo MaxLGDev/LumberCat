@@ -47,7 +47,7 @@ public class TutorialUI : MonoBehaviour
 
     public void ShowPage(int index)
     {
-        if(index < 0 || index >= infoPages.Length)
+        if (index < 0 || index >= infoPages.Length)
         {
             Debug.LogError($"Invalid tutorial index: {index}");
             return;
@@ -62,7 +62,7 @@ public class TutorialUI : MonoBehaviour
 
     private void HideAllInfos()
     {
-        foreach(var page in infoPages)
+        foreach (var page in infoPages)
             page.SetActive(false);
     }
 
