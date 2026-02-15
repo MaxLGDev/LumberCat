@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using UnityEngine;
+using unityroom.Api;
 
 public enum GameState
 {
@@ -128,12 +129,6 @@ public class GameManager : MonoBehaviour
 
     public void ReturnToMainMenu()
     {
-        if (SoundManager.Instance.musicSource.isPlaying)
-        {
-            SoundManager.Instance.musicSource.Stop();
-            SoundManager.Instance.PlayMusic("mainMenuBGM");
-        }
-
         // Stop countdown if running
         if (countdownCoroutine != null)
         {
@@ -293,7 +288,9 @@ public class GameManager : MonoBehaviour
             rounds.EndRound(false);
 
         OnGameEnded?.Invoke(won);
-        Debug.Log(won ? "You won!" : "You lost!");
+
+        if(won)
+            UnityroomApiClient.Instance.SendScore(1, totalTaps, ScoreboardWriteMode.HighScoreAsc);
     }
 
     public void QuitGame()

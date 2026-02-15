@@ -13,12 +13,36 @@ public class TutorialUI : MonoBehaviour
     [Header("Info Pages")]
     [SerializeField] private GameObject[] infoPages;
 
+    [SerializeField] private float fadeDuration;
+    private UIFade fader;
+    private bool isFading;
+
+    private void Awake()
+    {
+        fader = GetComponent<UIFade>();
+    }
+
     private void Start()
     {
         HideAllInfos();
         DimAllButtons();
 
         ShowPage(0);
+    }
+
+    public void ShowFade()
+    {
+        if (isFading)
+            return;
+
+        isFading = true;
+        fader.FadeIn(fadeDuration);
+    }
+
+    public void HideFade()
+    {
+        isFading = false;
+        fader.FadeOut(fadeDuration);
     }
 
     public void ShowPage(int index)
