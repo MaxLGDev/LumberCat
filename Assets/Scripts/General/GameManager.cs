@@ -204,8 +204,10 @@ public class GameManager : MonoBehaviour
 
     private void HandleRoundPrepared()
     {
+        Debug.Log("HandleRoundPrepared called");
         state = GameState.RoundTransition;
         OnGameStateChanged?.Invoke(state);
+        Debug.Log($"State changed to: {state}");
 
         PanelManager.Instance.ShowRoundTransition(true);
 
@@ -262,18 +264,27 @@ public class GameManager : MonoBehaviour
 
     private void HandleRoundEnded(bool won)
     {
+        Debug.Log($"HandleRoundEnded called. Won: {won}, CurrentRoundIndex: {currentRoundIndex}, TotalRounds: {rounds.TotalRounds}");
+
         if (won)
         {
             currentRoundIndex++;
             OnRoundChanged?.Invoke();
 
             if (currentRoundIndex >= rounds.TotalRounds)
+            {
+                Debug.Log("All rounds complete - ending game");
                 EndGame(true);
+            }
             else
+            {
+                Debug.Log($"Starting next round. Index: {currentRoundIndex}");
                 StartNextRound();
+            }
         }
         else
         {
+            Debug.Log("Round lost - ending game");
             EndGame(false);
         }
     }

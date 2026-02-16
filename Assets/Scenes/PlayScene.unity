@@ -7258,6 +7258,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e809059f374f6e45a8769e9b9dc06d0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIManager
+  input: {fileID: 1264947537}
   currentRound: {fileID: 1844564432}
   totalTaps: {fileID: 196813208}
   countdown: {fileID: 1252715305}
