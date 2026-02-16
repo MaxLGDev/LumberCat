@@ -25,6 +25,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private InputReader input;
     [SerializeField] private RoundManager rounds;
     [SerializeField] private RoundUIController roundUIController;
+    [SerializeField] private CameraShake cameraShake;
 
     public bool IsPaused => isPaused;
 
@@ -252,6 +253,7 @@ public class GameManager : MonoBehaviour
             return;
 
         SoundManager.Instance.PlaySFX("wrongKeySFX");
+        cameraShake.Shake(0.1f, 0.1f);
 
         totalTaps++;
         totalTaps = Mathf.Min(totalTaps, 999);

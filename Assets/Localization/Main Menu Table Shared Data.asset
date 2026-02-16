@@ -35,6 +35,10 @@ MonoBehaviour:
     m_Key: mainMenu.Exit
     m_Metadata:
       m_Items: []
+  - m_Id: 3303427277594624
+    m_Key: mainMenu.bestScore
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

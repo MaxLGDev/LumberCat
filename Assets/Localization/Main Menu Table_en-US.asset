@@ -38,6 +38,10 @@ MonoBehaviour:
     m_Localized: EXIT
     m_Metadata:
       m_Items: []
+  - m_Id: 3303427277594624
+    m_Localized: 'Best: {0}'
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

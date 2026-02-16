@@ -134,11 +134,13 @@ public class UIManager : MonoBehaviour
 
         for (int i = 3; i > 0; i--)
         {
+            SoundManager.Instance.PlaySFX("countdownSFX");
             countdownString.Arguments = new object[] { i };
             countdown.text = countdownString.GetLocalizedString();
             yield return new WaitForSeconds(1f);
         }
 
+        SoundManager.Instance.PlaySFX("countdownOverSFX");
         countdown.text = startString.GetLocalizedString();
         yield return new WaitForSeconds(0.5f);
 
