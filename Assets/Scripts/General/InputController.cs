@@ -39,6 +39,9 @@ public class InputController : MonoBehaviour
         if (!inputEnabled)
             return;
 
+        if (key == KeyCode.Escape)
+            return;
+
         inputCallback?.Invoke(key);
     }
 }
