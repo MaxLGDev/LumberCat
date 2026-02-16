@@ -184,6 +184,9 @@ public class UIManager : MonoBehaviour
             complimentStrings[index].RefreshString();
         }
 
+        if(gm.CurrentRound != 1)
+            SoundManager.Instance.PlaySFX("roundVictorySFX");
+
         roundClearedText.gameObject.SetActive(true);
         complimentText.gameObject.SetActive(true);
     }

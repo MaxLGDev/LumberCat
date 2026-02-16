@@ -5587,6 +5587,10 @@ MonoBehaviour:
     audioClip: {fileID: 8300000, guid: d53ff7b27c1333e4081834f13b2a3fe2, type: 3}
   - soundName: countdownOverSFX
     audioClip: {fileID: 8300000, guid: c7478a8090d836e43ac22760558325fc, type: 3}
+  - soundName: roundVictorySFX
+    audioClip: {fileID: 8300000, guid: 776b9c5079126004d8df3e0925a49fa1, type: 3}
+  - soundName: roundDefeatSFX
+    audioClip: {fileID: 8300000, guid: 24ebfebe6159d1f4bbcdb59fa7aff917, type: 3}
   musicSource: {fileID: 102034916}
   sfxSource: {fileID: 2066266502}
 --- !u!4 &711931743
@@ -7258,7 +7262,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e809059f374f6e45a8769e9b9dc06d0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIManager
-  input: {fileID: 1264947537}
   currentRound: {fileID: 1844564432}
   totalTaps: {fileID: 196813208}
   countdown: {fileID: 1252715305}

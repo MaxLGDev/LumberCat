@@ -134,7 +134,10 @@ public class PanelManager : MonoBehaviour
         if (won)
             victoryText.SetActive(true);
         else
+        {
+            SoundManager.Instance.PlaySFX("roundDefeatSFX");
             defeatText.SetActive(true);
+        }
 
     }
 
