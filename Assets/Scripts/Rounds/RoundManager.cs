@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 
+// 利用可能なラウンドメカニック種類
 public enum RoundMechanic
 {
     SingleKey,
@@ -24,13 +25,11 @@ public class RoundDefinition
     public KeyCode[] allowedKeys;
 
     [Header("Difficulty Modifiers")]
-    [Tooltip("Multiplier for tap count (1.0 = normal, 1.5 = 50% more taps)")]
     public float tapMultiplier = 1f;
-
-    [Tooltip("Multiplier for time (1.0 = normal, 2.0 = double time)")]
     public float timeMultiplier = 1f;
 }
 
+// 各ラウンドの進行・難易度・メカニック生成を管理する中核クラス
 public class RoundManager : MonoBehaviour
 {
     public event Action OnRoundValidInput;
@@ -38,6 +37,8 @@ public class RoundManager : MonoBehaviour
     public event Action<bool> OnRoundEnded;
     public event Action<KeyCode[]> OnActiveKeysChanged;
     public event Action OnRoundPrepared;
+
+    // OnCurrentKeyChangedの解除用に保持
     private Action<KeyCode[]> currentKeyChangedHandler;
 
     private IRoundMechanic currentMechanic;
@@ -45,6 +46,7 @@ public class RoundManager : MonoBehaviour
 
     [SerializeField] private InputController inputController;
     [SerializeField] private RoundDefinition[] rounds;
+
     private RoundDefinition[] shuffledRounds;
     private RoundDefinition currentRound;
 
@@ -53,6 +55,7 @@ public class RoundManager : MonoBehaviour
     [SerializeField] private int maxTaps = 60;
     [SerializeField] private float baseTime = 15f;
     [SerializeField] private float minTime = 6f;
+
     public int CurrentProgress { get; private set; }
 
     public IRoundMechanic CurrentMechanic => currentMechanic;
@@ -61,8 +64,8 @@ public class RoundManager : MonoBehaviour
     private float timer;
     private bool isActive;
 
-    public int CurrentRequiredTaps {get; private set;}
-    public int CurrentTaps { get; private set;}
+    public int CurrentRequiredTaps { get; private set; }
+    public int CurrentTaps { get; private set; }
 
     public bool IsRoundActive => isActive;
     public float RemainingTime => timer;
@@ -73,19 +76,23 @@ public class RoundManager : MonoBehaviour
         if (!isActive)
             return;
 
+        // タイマー減少
         timer -= Time.deltaTime;
+
         if (timer <= 0f)
             LoseRound();
 
+        // Tick可能なメカニックなら更新
         tickable?.Tick(Time.deltaTime);
     }
 
+    // Fisher-Yatesシャッフル
     public void ShuffleRounds()
     {
         shuffledRounds = (RoundDefinition[])rounds.Clone();
         int n = shuffledRounds.Length;
 
-        for(int i = 0; i < n - 1; i++)
+        for (int i = 0; i < n - 1; i++)
         {
             int j = UnityEngine.Random.Range(i, n);
             var temp = shuffledRounds[i];
@@ -94,8 +101,10 @@ public class RoundManager : MonoBehaviour
         }
     }
 
+    // ラウンドの準備（難易度計算＋メカニック生成）
     public void PrepareRound(RoundDefinition round, int roundIndex)
     {
+        // 全体進行度に応じた難易度スケーリング係数
         float t = (float)(roundIndex + 1) / (shuffledRounds.Length - 1);
 
         int baseTapsPerRound = Mathf.RoundToInt(Mathf.Lerp(baseTaps, maxTaps, t));
@@ -104,6 +113,7 @@ public class RoundManager : MonoBehaviour
         float calculedTime = Mathf.Lerp(baseTime, minTime, t);
         float time = baseTime * round.timeMultiplier;
 
+        // メカニックごとの時間補正
         if (round.mechanic == RoundMechanic.KeySequence)
             time *= 3f;
 
@@ -124,7 +134,7 @@ public class RoundManager : MonoBehaviour
 
         CurrentMechanicType = round.mechanic;
 
-        // Clear old mechanic first if it exists
+        // 既存メカニックがあれば解除
         if (currentMechanic != null)
         {
             UnhookMechanic(currentMechanic);
@@ -133,8 +143,10 @@ public class RoundManager : MonoBehaviour
 
         OnActiveKeysChanged?.Invoke(Array.Empty<KeyCode>());
 
+        // 新しいメカニック生成
         currentMechanic = CreateMechanic(round.mechanic);
         tickable = currentMechanic as ITickable;
+
         HookMechanic(currentMechanic);
 
         inputController.Bind(currentMechanic.HandleKey);
@@ -145,7 +157,8 @@ public class RoundManager : MonoBehaviour
         OnRoundPrepared?.Invoke();
     }
 
-    public void StartPreparedRound ()
+    // 準備済みラウンドを開始
+    public void StartPreparedRound()
     {
         if (currentMechanic == null)
             return;
@@ -155,6 +168,7 @@ public class RoundManager : MonoBehaviour
         isActive = true;
     }
 
+    // ラウンド終了処理
     public void EndRound(bool won)
     {
         isActive = false;
@@ -163,7 +177,7 @@ public class RoundManager : MonoBehaviour
         inputController.EnableInput(false);
         inputController.Unbind();
 
-        if(currentMechanic != null)
+        if (currentMechanic != null)
         {
             UnhookMechanic(currentMechanic);
             currentMechanic = null;
@@ -180,6 +194,7 @@ public class RoundManager : MonoBehaviour
         return shuffledRounds[index];
     }
 
+    // メカニックのイベント購読
     private void HookMechanic(IRoundMechanic mechanic)
     {
         mechanic.OnValidInput += HandleValidInput;
@@ -189,6 +204,7 @@ public class RoundManager : MonoBehaviour
         mechanic.OnCurrentKeyChanged += currentKeyChangedHandler;
     }
 
+    // メカニックのイベント解除
     private void UnhookMechanic(IRoundMechanic mechanic)
     {
         mechanic.OnValidInput -= HandleValidInput;
@@ -209,25 +225,23 @@ public class RoundManager : MonoBehaviour
         inputController.EnableInput(false);
         inputController.Unbind();
 
-        if(currentMechanic != null)
+        if (currentMechanic != null)
         {
             UnhookMechanic(currentMechanic);
             currentMechanic = null;
         }
     }
 
+    // 正解入力処理
     private void HandleValidInput()
     {
         if (!isActive) return;
-
-        if (GameManager.Instance.CurrentState != GameState.InGame)
-            return;
-
-        if (GameManager.Instance.IsPaused)
-            return;
+        if (GameManager.Instance.CurrentState != GameState.InGame) return;
+        if (GameManager.Instance.IsPaused) return;
 
         CurrentProgress++;
 
+        // 進行度依存メカニックへ通知
         if (currentMechanic is IProgressAware progressAware)
         {
             progressAware.OnProgressChanged(CurrentProgress, CurrentRequiredTaps);
@@ -239,16 +253,14 @@ public class RoundManager : MonoBehaviour
             EndRound(true);
     }
 
+    // 不正解入力処理
     private void HandleInvalidInput()
     {
         if (!isActive) return;
+        if (GameManager.Instance.CurrentState != GameState.InGame) return;
+        if (GameManager.Instance.IsPaused) return;
 
-        if (GameManager.Instance.CurrentState != GameState.InGame)
-            return;
-
-        if (GameManager.Instance.IsPaused)
-            return;
-
+        // 進行度を1減少（0未満にはしない）
         CurrentProgress = Mathf.Max(0, CurrentProgress - 1);
 
         if (currentMechanic is IProgressAware progressAware)
@@ -260,8 +272,9 @@ public class RoundManager : MonoBehaviour
     }
 
     private void WinRound() => EndRound(true);
-    private void LoseRound() => EndRound(false);   
+    private void LoseRound() => EndRound(false);
 
+    // 列挙値から対応するメカニックを生成
     private IRoundMechanic CreateMechanic(RoundMechanic type)
     {
         return type switch

@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.Localization;
 using UnityEngine.UI;
 
+// ラウンド表示用のデータ構造
 public class RoundPresentation
 {
     public string instructionText;
@@ -22,6 +23,7 @@ public class RoundUIController : MonoBehaviour
 {
     [SerializeField] private RoundManager roundManager;
 
+    // KeyCodeと対応Spriteのマッピング定義（Inspector設定）
     [SerializeField] private KeySpritePair[] keySpritePairs;
 
     private Dictionary<KeyCode, Sprite> keySpriteMap;
@@ -37,17 +39,16 @@ public class RoundUIController : MonoBehaviour
 
     [SerializeField] private SpriteRenderer[] keySlots;
     [SerializeField] private SpriteRenderer[] keyOutlines;
-    [SerializeField] private Sprite[] keySprites;
 
     private string timerActiveFormat;
     private string timerInactiveText;
 
     private IRoundMechanic lastMechanic;
-
     private KeyCode[] lastKeys;
 
     private void Awake()
     {
+        // ローカライズ文字列更新時の反映処理
         timerInactiveString.StringChanged += value =>
         {
             timerInactiveText = value;
@@ -74,7 +75,7 @@ public class RoundUIController : MonoBehaviour
             return;
         }
 
-        // -- Build dictionary map --
+        // KeyCode → Sprite の辞書を構築
         keySpriteMap = new Dictionary<KeyCode, Sprite>();
 
         foreach (var pair in keySpritePairs)
@@ -95,10 +96,9 @@ public class RoundUIController : MonoBehaviour
         }
     }
 
-
     private void Update()
     {
-
+        // ラウンド中のみUI更新
         if (!roundManager.IsRoundActive)
             return;
 
@@ -107,9 +107,11 @@ public class RoundUIController : MonoBehaviour
 
         progressBar.value = roundManager.CurrentProgress;
 
+        // 残り時間表示（フォーマットはローカライズ文字列）
         timerDuration.text = $"{timerActiveFormat}{roundManager.RemainingTime:F3}";
     }
 
+    // 現在有効なキーをUIに表示
     private void ShowAllowedKeys(KeyCode[] keys)
     {
         if (keySlots == null || keySlots.Length == 0)
@@ -122,24 +124,21 @@ public class RoundUIController : MonoBehaviour
 
         int slotCount = keySlots.Length;
 
-        // Clear all slots
+        // 全スロットを初期化
         for (int i = 0; i < slotCount; i++)
         {
             keySlots[i].enabled = false;
-
 
             if (keyOutlines != null && i < keyOutlines.Length)
                 keyOutlines[i].color = Color.clear;
         }
 
-        // Get active key from mechanic
+        // 現在のアクティブキー取得（強調表示用）
         KeyCode activeKey = KeyCode.None;
         if (roundManager.CurrentMechanic != null)
             activeKey = roundManager.CurrentMechanic.CurrentKey;
 
-        string mechanicType = roundManager.CurrentMechanic != null ? roundManager.CurrentMechanic.GetType().Name : "NULL";
-
-        // Determine which slots to use (simple centering for 1–3 keys)
+        // 1〜3キーの簡易中央配置ロジック
         int[] slotsToUse;
         if (keys.Length == 1) slotsToUse = new int[] { 1 };
         else if (keys.Length == 2) slotsToUse = new int[] { 0, 2 };
@@ -150,7 +149,6 @@ public class RoundUIController : MonoBehaviour
             int slot = slotsToUse[i];
             if (slot >= slotCount) continue;
 
-            // Get the correct sprite for the key
             Sprite keySprite = GetSpriteForKey(keys[i]);
             if (keySprite != null)
             {
@@ -158,11 +156,11 @@ public class RoundUIController : MonoBehaviour
                 keySlots[slot].enabled = true;
             }
 
-            // Highlight outline
+            // 正解キーを緑、それ以外を赤でアウトライン表示
             if (keyOutlines != null && slot < keyOutlines.Length)
             {
-                Color correctColor = new Color(0.3f, 0.8f, 0.3f); // Softer green
-                Color wrongColor = new Color(0.8f, 0.3f, 0.3f);   // Softer red
+                Color correctColor = new Color(0.3f, 0.8f, 0.3f);
+                Color wrongColor = new Color(0.8f, 0.3f, 0.3f);
                 keyOutlines[slot].color = (keys[i] == activeKey) ? correctColor : wrongColor;
             }
         }
@@ -173,7 +171,7 @@ public class RoundUIController : MonoBehaviour
         timerDuration.text = text;
     }
 
-    // Map KeyCode to your sprites safely
+    // KeyCodeに対応するSpriteを安全に取得
     private Sprite GetSpriteForKey(KeyCode key)
     {
         if (keySpriteMap == null)
@@ -193,6 +191,7 @@ public class RoundUIController : MonoBehaviour
 
     private void OnEnable()
     {
+        // ラウンドイベント購読
         roundManager.OnRoundPrepared += InitializeRoundUI;
         roundManager.OnRoundEnded += ShowRoundEnd;
         roundManager.OnActiveKeysChanged += ShowAllowedKeys;
@@ -200,6 +199,7 @@ public class RoundUIController : MonoBehaviour
 
     private void OnDisable()
     {
+        // イベント購読解除
         roundManager.OnRoundPrepared -= InitializeRoundUI;
         roundManager.OnRoundEnded -= ShowRoundEnd;
         roundManager.OnActiveKeysChanged -= ShowAllowedKeys;
@@ -212,6 +212,7 @@ public class RoundUIController : MonoBehaviour
     {
         timerDuration.text = timerInactiveText;
 
+        // キー表示クリア
         ShowAllowedKeys(Array.Empty<KeyCode>());
 
         if (won)
@@ -225,11 +226,12 @@ public class RoundUIController : MonoBehaviour
         timerDuration.text = timerInactiveText;
     }
 
+    // 新しいラウンド開始時のUI初期化
     private void InitializeRoundUI()
     {
         lastKeys = null;
 
-        // Unsubscribe from the previous mechanic
+        // 以前のメカニックからイベント解除
         if (lastMechanic != null)
         {
             lastMechanic.OnCurrentKeyChanged -= ShowAllowedKeys;
@@ -241,7 +243,7 @@ public class RoundUIController : MonoBehaviour
         progressBar.maxValue = roundManager.CurrentRequiredTaps;
         progressBar.value = 0;
 
-        // Subscribe to the new mechanic
+        // 新しいメカニックへイベント登録
         if (roundManager.CurrentMechanic != null)
         {
             lastMechanic = roundManager.CurrentMechanic;
@@ -249,6 +251,7 @@ public class RoundUIController : MonoBehaviour
         }
     }
 
+    // メカニック名をローカライズテーブルから取得
     private void LocalizeMechanicName()
     {
         mechanicNameLocalized.TableReference = "MechanicsTable";

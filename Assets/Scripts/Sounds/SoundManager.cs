@@ -2,28 +2,33 @@ using System;
 using UnityEngine;
 using UnityEngine.Audio;
 
+// BGM・効果音・音量管理を行うクラス
 public class SoundManager : MonoBehaviour
 {
-    // �V���O���g���Q��
+    // シングルトン参照
     public static SoundManager Instance;
 
     [SerializeField] private AudioMixer mixer;
+
+    // AudioMixer のパラメータ名
     private const string MASTER_VOLUME = "MasterVolume";
     private const string MUSIC_VOLUME = "MusicVolume";
     private const string SFX_VOLUME = "SFXVolume";
 
+    // PlayerPrefs 保存キー
     private const string MUSIC_PREF = "MusicVolume";
     private const string SFX_PREF = "SFXVolume";
 
-    // ���y / ���ʉ��f�[�^
+    // 音データ
     public Sound[] musicSounds, effectSounds;
 
-    // �Đ��p AudioSource
-    public AudioSource musicSource, sfxSource;
+    // 再生用 AudioSource
+    public AudioSource musicSource;
+    public AudioSource sfxSource;
 
     private bool isMuted;
 
-    // Singleton ������
+    // シングルトン初期化
     private void Awake()
     {
         if (mixer == null)
@@ -32,16 +37,17 @@ public class SoundManager : MonoBehaviour
         if (Instance == null)
         {
             Instance = this;
-            DontDestroyOnLoad(gameObject);
+            DontDestroyOnLoad(gameObject); // シーン跨ぎで保持
         }
         else
         {
-            Destroy(gameObject);
+            Destroy(gameObject); // 重複防止
         }
     }
 
     private void Start()
     {
+        // 保存済み音量の読み込み（デフォルト0.5）
         float music = PlayerPrefs.GetFloat(MUSIC_PREF, 0.5f);
         float sfx = PlayerPrefs.GetFloat(SFX_PREF, 0.5f);
 
@@ -49,7 +55,7 @@ public class SoundManager : MonoBehaviour
         SetSFXVolume(sfx);
     }
 
-    // �T�E���h�������Đ��̋��ʏ���
+    // 共通再生処理
     private void PlaySound(
         Sound[] soundArray,
         AudioSource source,
@@ -58,10 +64,11 @@ public class SoundManager : MonoBehaviour
     {
         if (source == null)
         {
-            Debug.LogWarning("AudioSource ���ݒ肳��Ă��܂���");
+            Debug.LogWarning("AudioSource が設定されていません");
             return;
         }
 
+        // 名前で検索
         Sound sound = Array.Find(soundArray, s => s.soundName == name);
 
         if (sound == null)
@@ -81,7 +88,7 @@ public class SoundManager : MonoBehaviour
         }
     }
 
-    // BGM �Đ�
+    // BGM再生（既存停止）
     public void PlayMusic(string name)
     {
         if (musicSource.isPlaying)
@@ -90,15 +97,17 @@ public class SoundManager : MonoBehaviour
         PlaySound(musicSounds, musicSource, name);
     }
 
+    // 全体一時停止
     public void PauseAll()
     {
         if (musicSource.isPlaying)
             musicSource.Pause();
 
-        if(sfxSource.isPlaying)
+        if (sfxSource.isPlaying)
             sfxSource.Pause();
     }
 
+    // 再開
     public void ResumeAll()
     {
         if (!musicSource.isPlaying && musicSource.clip != null)
@@ -108,7 +117,7 @@ public class SoundManager : MonoBehaviour
             sfxSource.UnPause();
     }
 
-    // ���ʉ��Đ��i�s�b�`�w��j
+    // 効果音再生（ピッチ変更可）
     public void PlaySFX(string name, float pitch = 1f)
     {
         Sound sfxSound =
@@ -122,37 +131,39 @@ public class SoundManager : MonoBehaviour
 
         sfxSource.pitch = pitch;
         sfxSource.PlayOneShot(sfxSound.audioClip);
-        sfxSource.pitch = 1f;
+        sfxSource.pitch = 1f; // 元に戻す
     }
 
-    // WRAPPER FOR BUTTON USE
+    // ボタン用ラッパー
     public void PlaySFX(string name)
     {
         PlaySFX(name, 1f);
     }
 
+    // 0～1の値をdBへ変換して適用
     private void SetVolume(string parameter, float value)
     {
-        // Slider safety
         value = Mathf.Clamp01(value);
 
-        // Convert 0-1 to Db
         float db = value == 0 ? -80f : Mathf.Log10(value) * 20f;
         mixer.SetFloat(parameter, db);
     }
 
+    // BGM音量設定
     public void SetMusicVolume(float value)
     {
         SetVolume(MUSIC_VOLUME, value);
         PlayerPrefs.SetFloat(MUSIC_PREF, value);
     }
 
+    // 効果音音量設定
     public void SetSFXVolume(float value)
     {
         SetVolume(SFX_VOLUME, value);
         PlayerPrefs.SetFloat(SFX_PREF, value);
     }
 
+    // ミュート切替
     public void ToggleMute() => SetMuted(!isMuted);
 
     public void SetMuted(bool mute)
@@ -163,6 +174,7 @@ public class SoundManager : MonoBehaviour
 
     public bool IsMuted() => isMuted;
 
+    // アプリ一時停止時に保存
     private void OnApplicationPause(bool pause)
     {
         if (pause)

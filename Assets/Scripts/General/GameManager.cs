@@ -3,6 +3,7 @@ using System.Collections;
 using UnityEngine;
 using unityroom.Api;
 
+// ゲーム全体の進行状態を管理するステート
 public enum GameState
 {
     WaitingForStart,
@@ -14,8 +15,10 @@ public enum GameState
 
 public class GameManager : MonoBehaviour
 {
+    // シングルトンインスタンス（ゲーム全体で1つのみ存在）
     public static GameManager Instance { get; private set; }
 
+    // UIや他システムへ通知するイベント
     public event Action<int> OnTotalTapsChanged;
     public event Action OnRoundChanged;
     public event Action<bool> OnGameEnded;
@@ -33,6 +36,8 @@ public class GameManager : MonoBehaviour
     private int currentRoundIndex;
     private int totalRounds;
     private int totalTaps;
+
+    // 現在のゲーム状態
     private GameState state = GameState.WaitingForStart;
     public GameState CurrentState => state;
 
@@ -42,11 +47,13 @@ public class GameManager : MonoBehaviour
     public int CurrentRound => currentRoundIndex + 1;
     public int TotalRounds => totalRounds;
 
+    // ラウンド開始前カウントダウン用コルーチン管理
     private Coroutine countdownCoroutine;
 
     private void Awake()
     {
-        if(Instance != null)
+        // シングルトン保証
+        if (Instance != null)
         {
             Debug.LogError("Multiple Game Managers detected!");
             Destroy(gameObject);
@@ -54,7 +61,6 @@ public class GameManager : MonoBehaviour
         }
 
         Instance = this;
-
         state = GameState.WaitingForStart;
     }
 
@@ -63,7 +69,7 @@ public class GameManager : MonoBehaviour
         SoundManager.Instance.PlayMusic("mainMenuBGM");
     }
 
-    //private int invalidTaps
+    // ゲーム開始処理（初期化＋最初のラウンド準備）
     public void StartGame()
     {
         rounds.ShuffleRounds();
@@ -83,12 +89,14 @@ public class GameManager : MonoBehaviour
         SoundManager.Instance.PlayMusic("inGameBGM");
     }
 
+    // 次のラウンドを取得して準備
     public void StartNextRound()
     {
         RoundDefinition nextRound = rounds.GetRound(currentRoundIndex);
         rounds.PrepareRound(nextRound, currentRoundIndex);
     }
 
+    // リトライ時の完全リセット処理
     public void RetryGame()
     {
         ForceUnpause();
@@ -107,6 +115,7 @@ public class GameManager : MonoBehaviour
         totalTaps = 0;
         currentRoundIndex = 0;
         totalRounds = rounds.TotalRounds;
+
         state = GameState.RoundTransition;
         OnGameStateChanged?.Invoke(state);
 
@@ -117,6 +126,7 @@ public class GameManager : MonoBehaviour
         rounds.PrepareRound(nextRound, 0);
     }
 
+    // 強制的にポーズ解除（状態を確実に戻す）
     private void ForceUnpause()
     {
         if (!isPaused)
@@ -128,6 +138,7 @@ public class GameManager : MonoBehaviour
         OnGamePaused?.Invoke(false);
     }
 
+    // メインメニューへ戻る際の完全クリーンアップ処理
     public void ReturnToMainMenu()
     {
         if (SoundManager.Instance.musicSource.isPlaying)
@@ -136,14 +147,14 @@ public class GameManager : MonoBehaviour
             SoundManager.Instance.PlayMusic("mainMenuBGM");
         }
 
-        // Stop countdown if running
+        // カウントダウンが動いていれば停止
         if (countdownCoroutine != null)
         {
             StopCoroutine(countdownCoroutine);
             countdownCoroutine = null;
         }
 
-        // FORCE stop any round
+        // ラウンド強制終了
         if (rounds.IsRoundActive)
             rounds.EndRound(false);
 
@@ -156,13 +167,13 @@ public class GameManager : MonoBehaviour
         OnGameStateChanged?.Invoke(state);
     }
 
+    // ポーズ切り替え（ゲーム中のみ有効）
     public void TogglePause()
     {
         if (state != GameState.InGame)
             return;
 
         isPaused = !isPaused;
-
         Time.timeScale = isPaused ? 0f : 1f;
 
         if (isPaused)
@@ -175,6 +186,7 @@ public class GameManager : MonoBehaviour
 
     private void OnEnable()
     {
+        // ラウンド関連イベント購読
         rounds.OnRoundValidInput += HandleRoundValidInput;
         rounds.OnRoundInvalidInput += HandleRoundInvalidInput;
         rounds.OnRoundEnded += HandleRoundEnded;
@@ -185,6 +197,7 @@ public class GameManager : MonoBehaviour
 
     private void OnDisable()
     {
+        // イベント購読解除（メモリリーク防止）
         rounds.OnRoundValidInput -= HandleRoundValidInput;
         rounds.OnRoundInvalidInput -= HandleRoundInvalidInput;
         rounds.OnRoundEnded -= HandleRoundEnded;
@@ -193,6 +206,7 @@ public class GameManager : MonoBehaviour
         input.OnKeyPressed -= HandleKeyPressed;
     }
 
+    // Escキーでポーズ制御
     private void HandleKeyPressed(KeyCode key)
     {
         if (key == KeyCode.Escape)
@@ -202,12 +216,11 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    // ラウンド準備完了時の処理（カウントダウン開始）
     private void HandleRoundPrepared()
     {
-        Debug.Log("HandleRoundPrepared called");
         state = GameState.RoundTransition;
         OnGameStateChanged?.Invoke(state);
-        Debug.Log($"State changed to: {state}");
 
         PanelManager.Instance.ShowRoundTransition(true);
 
@@ -220,9 +233,10 @@ public class GameManager : MonoBehaviour
         countdownCoroutine = StartCoroutine(RoundCountdownCoroutine());
     }
 
+    // ラウンド開始前のカウントダウン処理
     private IEnumerator RoundCountdownCoroutine()
     {
-        // Safety: force unpause & resume time
+        // 安全のため時間スケールとポーズ状態を強制復帰
         isPaused = false;
         Time.timeScale = 1f;
         SoundManager.Instance.ResumeAll();
@@ -231,24 +245,24 @@ public class GameManager : MonoBehaviour
 
         state = GameState.InGame;
         OnGameStateChanged?.Invoke(state);
+
         rounds.StartPreparedRound();
     }
 
+    // 正解入力時の処理
     private void HandleRoundValidInput()
     {
-        if (isPaused)
-            return;
-
-        if (state != GameState.InGame)
+        if (isPaused || state != GameState.InGame)
             return;
 
         SoundManager.Instance.PlaySFX("goodKeySFX");
 
         totalTaps++;
-        totalTaps = Mathf.Min(totalTaps, 999);
+        totalTaps = Mathf.Min(totalTaps, 999); // 上限制限
         OnTotalTapsChanged?.Invoke(totalTaps);
     }
 
+    // 不正解入力時の処理（演出付き）
     private void HandleRoundInvalidInput()
     {
         if (isPaused)
@@ -262,33 +276,31 @@ public class GameManager : MonoBehaviour
         OnTotalTapsChanged?.Invoke(totalTaps);
     }
 
+    // ラウンド終了時の分岐処理
     private void HandleRoundEnded(bool won)
     {
-        Debug.Log($"HandleRoundEnded called. Won: {won}, CurrentRoundIndex: {currentRoundIndex}, TotalRounds: {rounds.TotalRounds}");
-
         if (won)
         {
             currentRoundIndex++;
             OnRoundChanged?.Invoke();
 
+            // 全ラウンド終了ならゲーム終了
             if (currentRoundIndex >= rounds.TotalRounds)
             {
-                Debug.Log("All rounds complete - ending game");
                 EndGame(true);
             }
             else
             {
-                Debug.Log($"Starting next round. Index: {currentRoundIndex}");
                 StartNextRound();
             }
         }
         else
         {
-            Debug.Log("Round lost - ending game");
             EndGame(false);
         }
     }
 
+    // ゲーム終了処理（勝敗確定）
     private void EndGame(bool won)
     {
         if (SoundManager.Instance.musicSource.isPlaying)
@@ -307,8 +319,8 @@ public class GameManager : MonoBehaviour
             rounds.EndRound(false);
 
         OnGameEnded?.Invoke(won);
-        Debug.Log(won ? "You won!" : "You lost!");
 
+        // 勝利時のみスコア送信
         if (won)
             UnityroomApiClient.Instance.SendScore(1, totalTaps, ScoreboardWriteMode.HighScoreAsc);
     }
